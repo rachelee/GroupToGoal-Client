@@ -1,0 +1,17 @@
+<div ng-controller='articleCtrl'>
+  <form ng-submit='submitForm()' >
+    <div class="form-group" novalidate>
+      <label for="articleTitle">Title</label>
+      <input type="text" class="form-control" id="articleTitle" placeholder="Title" ng-model="article.title">
+    </div>
+    <div class="form-group">
+      <label for="articleContent">Content</label>
+      <textarea  class="form-control" id="articleContent" ng-model="article.content"></textarea>
+    </div>
+    <button type="submit" class="btn btn-default">Submit</button>
+  </form>
+    <p>Title: {{article.title}}</p>
+    <p>Content :{{article.content}}</p>
+ </div>
+
+

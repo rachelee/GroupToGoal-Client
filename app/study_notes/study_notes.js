@@ -47,13 +47,13 @@ app.controller('StudyNotesCtrl', ['$scope', '$sce', '$http',function($scope, $sc
         });
 
 
-}])
-    .directive('ngPost',function(){
+}]);
+app.directive('ngPost',function(){
       return {
         restrict: 'E',
         templateUrl: 'post.html'
       }
-    });
+});
 
 
 

@@ -1,10 +1,12 @@
 /**
  * Created by xiaoxiaoli on 2/15/16.
  */
-var clientId = '339048773288-f3leqo429gvf6o4la18cgi8ku43p6k1d.apps.googleusercontent.com';
+var clientId = '339048773288-fgu6hiji5nkolmugeedhs7s176ptsjh5.apps.googleusercontent.com';
 var apiKey = 'AIzaSyCJYQP-csp86STMc70_G_2Wuz18GhAOntM';
-var scopes = 'https://www.googleapis.com/auth/plus.me';
+var scopes = 'https://www.googleapis.com/auth/blogger';
 
+
+    //
 function makeRequest() {
     var blog_name_request = gapi.client.blogger.blogs.get({
         'blogId': '6398562378207461363'
@@ -52,8 +54,9 @@ function makeRequest() {
 
 function init() {
     gapi.client.setApiKey(apiKey);
+    //getPosts();
     window.setTimeout(checkAuth,1);
-    gapi.client.load('blogger', 'v3').then(makeRequest);
+    //gapi.client.load('blogger', 'v3').then(makeRequest);
 }
 
 function checkAuth() {
@@ -64,7 +67,7 @@ function handleAuthResult(authResult) {
     var authorizeButton = document.getElementById('authorize-button');
     if (authResult && !authResult.error) {
         authorizeButton.style.visibility = 'hidden';
-        makeApiCall();
+        getPosts();
     } else {
         authorizeButton.style.visibility = '';
         authorizeButton.onclick = handleAuthClick;
@@ -75,3 +78,9 @@ function handleAuthClick(event) {
     gapi.auth.authorize({client_id: clientId, scope: scopes, immediate: false}, handleAuthResult);
     return false;
 }
+
+function getPosts(){
+    gapi.client.load('blogger', 'v3').then(makeRequest);
+}
+
+

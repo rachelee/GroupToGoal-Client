@@ -1,5 +1,5 @@
-<div>
-    <h3>{{title}}</h3>
-    <span>-{{author}}</span>
-    <p>{{content}}</p>
+<div ng-repeat="post in posts">
+    <h3>{{post.title}}</h3>
+    <span>-{{post.author.displayname}}-{{post.published}}</span>
+    <p>{{post.content}}</p>
 </div>

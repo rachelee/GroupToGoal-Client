@@ -1,7 +1,7 @@
 'use strict';
 
-var app = angular.module('myApp.study_notes', ['ngRoute'])
-
+var app = angular.module('myApp.study_notes', ['ngRoute']);
+var blogURL = 'http://groutogoalnotes.blogspot.com/';
 app.config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/study_notes', {
     templateUrl: 'study_notes/study_notes.html',
@@ -9,7 +9,7 @@ app.config(['$routeProvider', function($routeProvider) {
   });
 }])
 
-app.controller('StudyNotesCtrl', ['$scope', '$sce', '$http',function($scope, $sce, $http) {
+app.controller('StudyNotesCtrl', ['$scope','GApi', function($scope, GApi) {
 
     $scope.posts=[];
     var post = {};
@@ -28,11 +28,6 @@ app.controller('StudyNotesCtrl', ['$scope', '$sce', '$http',function($scope, $sc
             $scope.visible = !$scope.visible
         }
     };
-
-
-    //$scope.updateHtml = function() {
-    //    $scope.contentHtml = $sce.trustAsHtml($scope.content);
-    //};
 
     $scope.tinymceOptions = {
     selector: 'textarea',
@@ -58,6 +53,14 @@ app.controller('StudyNotesCtrl', ['$scope', '$sce', '$http',function($scope, $sc
     //        console.error('Error', status, data);
     //    });
 
+
+    //Get posts
+    GApi.executeAuth('blogger', 'blogs.getByUrl', {'url': blogURL}).then( function(resp) {
+        $scope.value = resp;
+        console.log($scope.value);
+    }, function() {
+        console.log("error :(");
+    });
 
 }]);
 app.directive('ngPost',function(){

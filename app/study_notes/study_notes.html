@@ -1,8 +1,8 @@
 
 <html>
 <head>
-  <script src="https://apis.google.com/js/client.js?onload=init"></script>
-  <script src="study_notes/blogger_access.js"></script>
+  <!--<script src="https://apis.google.com/js/client.js?onload=init"></script>-->
+  <!--<script src="study_notes/blogger_access.js"></script>-->
 
 </head>
 <body ng-controller="StudyNotesCtrl">
@@ -10,7 +10,7 @@
   <button id="authorize-button" style="visibility: hidden">Authorize</button>
   <div ng-show="visible" class="form-group field" >
     <input class="editable title form-control form-control-no-border" ng-model = "post.title" placeholder="Title">
-    <textarea ng-model="post.content" ui-tinymce="tinymceOptions" ng-change="updateHtml()" class="editable form-control form-control-no-border" rows="20" placeholder="Write down your note...">
+    <textarea ng-model="post.content" ui-tinymce="tinymceOptions"  class="editable form-control form-control-no-border" rows="20" placeholder="Write down your note...">
     </textarea>
   </div>
   <div ng-bind-html="post.content"></div>

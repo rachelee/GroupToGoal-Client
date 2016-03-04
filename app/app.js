@@ -34,8 +34,8 @@ config(['$routeProvider', function($routeProvider) {
 //  }
 //]);
 
-.run(['GAuth', 'GApi', 'GData', '$rootScope','$window',
-  function(GAuth, GApi, GData, $rootScope, window) {
+.run(['GAuth', 'GApi', 'GData', '$rootScope','$window','$cookies',
+  function(GAuth, GApi, GData, $rootScope, window, $cookies) {
 
     $rootScope.gdata = GData;
 
@@ -49,8 +49,8 @@ config(['$routeProvider', function($routeProvider) {
 
     GAuth.checkAuth().then(
         function (user) {
-          console.log(user.name + 'is login')
-          window.location.href='#/study_notes'; // an example of action if it's possible to
+          console.log(user.name + ' is login')
+          window.location.href='#/main_dashboard'; // an example of action if it's possible to
           // authenticate user at startup of the application
         },
         function() {
@@ -58,6 +58,13 @@ config(['$routeProvider', function($routeProvider) {
           // authenticate user at startup of the application
         }
     );
+
+    $rootScope.logout = function() {
+      GAuth.logout().then(function () {
+        $cookies.remove('userId');
+        window.location.href='#/login';
+      });
+    };
   }
 ]);
 

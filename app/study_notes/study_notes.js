@@ -1,4 +1,4 @@
-'use strict';
+"use strict"
 
 var app = angular.module('myApp.study_notes', ['ngRoute']);
 var blogURL = 'http://groutogoalnotes.blogspot.com/';
@@ -9,26 +9,49 @@ app.config(['$routeProvider', function($routeProvider) {
   });
 }])
 
-app.controller('StudyNotesCtrl', ['$scope','GApi', function($scope, GApi) {
+app.controller('StudyNotesCtrl', ['$scope','GApi', '$rootScope', function($scope, GApi, $rootScope) {
 
-    $scope.posts=[];
-    var post = {};
-    post.author={};
+    $scope.blog = {};
+    $scope.blog.posts=[];
+    $scope.newPost = {};
+    $scope.newPost.author={};
     $scope.visible = false;
     $scope.publish = function(){
+        $scope.error = "";
         if($scope.visible==false)
             $scope.visible = !$scope.visible
         else{
-            post.published=new Date();
-            post.author.displayname="Xiaoxiao Li";//To Do: later add username here
-            console.log(post);
-            post = publishNewPost($scope.post);
-            console.log(post);
-            $scope.posts.push(post);
-            $scope.visible = !$scope.visible
+            $scope.newPost.published=new Date();
+            $scope.newPost.author.displayname=$rootScope.gdata.getUser().name;//To Do: later add username here
+            //console.log(post);
+            console.log($scope.newPost.title);
+            console.log($scope.newPost.content);
+            //Post a new post
+            if($scope.newPost.title==undefined) {
+                $scope.error = "Please enter title for your post!"
+            }
+            else if ($scope.newPost.content==undefined) {
+                $scope.error = "Please enter content for your post!"
+            }
+            else {
+                GApi.executeAuth('blogger', 'posts.insert', {
+                    'blogId': $scope.blog.id,
+                    'resource': $scope.newPost
+                }).then(function (resp) {
+                    $scope.newPost = resp;
+                    $scope.blog.posts.unshift($scope.newPost);
+                    $scope.visible = !$scope.visible
+                    console.log($scope.newPost);
+                }, function () {
+                    console.log("error post new post");
+                });
+            }
+
+
         }
     };
 
+    //WISWIG editor plugin
     $scope.tinymceOptions = {
     selector: 'textarea',
     trusted:true,
@@ -40,35 +63,28 @@ app.controller('StudyNotesCtrl', ['$scope','GApi', function($scope, GApi) {
     toolbar: 'insertfile undo redo | styleselect ' + '| forecolor backcolor bold italic | alignleft aligncenter alignright alignjustify ' + '| bullist numlist outdent indent | link image codesample'
 
     };
-    //$http({
-    //    method:'GET',
-    //    url:'http://localhost:8080/test'
-    //}).success(
-    //    function(data){
-    //        console.log(data);
-    //        $scope.article=data;
-    //    }
-    //)
-    //    .error(function(data, status) {
-    //        console.error('Error', status, data);
-    //    });
+
 
 
     //Get posts
-    GApi.executeAuth('blogger', 'blogs.getByUrl', {'url': blogURL}).then( function(resp) {
-        $scope.value = resp;
-        console.log($scope.value);
-    }, function() {
-        console.log("error :(");
-    });
+
+    $scope.getPosts = function(){
+        //Get blog id from URL
+        GApi.executeAuth('blogger', 'blogs.getByUrl', {'url': blogURL}).then( function(resp) {
+            $scope.value = resp;
+            $scope.blog.id = $scope.value.id;
+            $scope.blog.name = $scope.value.result.name;
+            GApi.executeAuth('blogger', 'posts.list', {'blogId': $scope.blog.id}).then( function(resp) {
+                $scope.value = resp;
+                $scope.blog.posts = $scope.value.result.items;
+                console.log($scope.value)
+            }, function() {
+                console.log("error get post list failed");
+            });
+
+        }, function() {
+            console.log("error :(");
+        });
+    };
 
 }]);
-app.directive('ngPost',function(){
-      return {
-        restrict: 'E',
-        templateUrl: 'post.html'
-      }
-});
-
-
-

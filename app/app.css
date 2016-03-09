@@ -133,3 +133,6 @@ body {
   box-shadow: none;
 }
 
+#publish_button{
+  margin-top:1em;
+}

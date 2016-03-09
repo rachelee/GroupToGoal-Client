@@ -10,7 +10,8 @@ app.config(['$routeProvider', function($routeProvider) {
 }])
 
 app.controller('StudyNotesCtrl', ['$scope','GApi', '$rootScope', function($scope, GApi, $rootScope) {
-
+    $rootScope.blog_ids={'self':"6398562378207461363",
+        'others':[{'name':'Yue Shen', 'blog_id':"3213900"}, {'name':'Dan Su', 'blog_id':"5580000621368117250"}]};
     $scope.blog = {};
     $scope.blog.posts=[];
     $scope.newPost = {};
@@ -65,26 +66,52 @@ app.controller('StudyNotesCtrl', ['$scope','GApi', '$rootScope', function($scope
     };
 
 
+    //Get blog id
+    //$scope.getPosts = function(){
+    //    //Get blog id from URL
+    //    GApi.executeAuth('blogger', 'blogs.getByUrl', {'url': blogURL}).then( function(resp) {
+    //        $scope.value = resp;
+    //        $scope.blog.id = $scope.value.id;
+    //        console.log($scope.blog.id);
+    //        $scope.blog.name = $scope.value.result.name;
+    //
+    //    }, function() {
+    //        console.log("error :(");
+    //    });
+    //};
 
-    //Get posts
 
-    $scope.getPosts = function(){
-        //Get blog id from URL
-        GApi.executeAuth('blogger', 'blogs.getByUrl', {'url': blogURL}).then( function(resp) {
+    //Get self posts
+    $scope.tab = 1;
+    GApi.executeAuth('blogger', 'posts.list', {'blogId': $rootScope.blog_ids.self}).then( function(resp) {
+        $scope.value = resp;
+        $scope.blog.posts = $scope.value.items;
+        console.log($scope.value)
+    }, function() {
+        console.log("error get post list failed");
+    });
+
+
+    $scope.getPosts = function(id){
+        if(id===$rootScope.blog_ids.self){
+            $scope.tab=1;
+        }
+        else{
+            $scope.tab=2;
+        }
+
+        GApi.executeAuth('blogger', 'posts.list', {'blogId':id}).then( function(resp) {
             $scope.value = resp;
-            $scope.blog.id = $scope.value.id;
-            $scope.blog.name = $scope.value.result.name;
-            GApi.executeAuth('blogger', 'posts.list', {'blogId': $scope.blog.id}).then( function(resp) {
-                $scope.value = resp;
-                $scope.blog.posts = $scope.value.result.items;
-                console.log($scope.value)
-            }, function() {
-                console.log("error get post list failed");
-            });
-
+            $scope.blog.posts = $scope.value.items;
+            console.log($scope.value)
         }, function() {
-            console.log("error :(");
+            console.log("error get post list failed");
         });
-    };
+
+
+    }
+
+
+
 
 }]);

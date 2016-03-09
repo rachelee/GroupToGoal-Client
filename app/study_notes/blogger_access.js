@@ -1,7 +1,7 @@
 /**
  * Created by xiaoxiaoli on 2/15/16.
  */
-var clientId = '339048773288-fgu6hiji5nkolmugeedhs7s176ptsjh5.apps.googleusercontent.com';
+var clientId = '339048773288-d1uc4190g7stc84rcm22l4bhg9hch1je.apps.googleusercontent.com';
 var apiKey = 'AIzaSyCJYQP-csp86STMc70_G_2Wuz18GhAOntM';
 var scopes = 'https://www.googleapis.com/auth/blogger';
 var blogId = '6398562378207461363'

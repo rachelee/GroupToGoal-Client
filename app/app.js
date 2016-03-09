@@ -39,6 +39,7 @@ config(['$routeProvider', function($routeProvider) {
 
     $rootScope.gdata = GData;
 
+
     var CLIENT = '339048773288-d1uc4190g7stc84rcm22l4bhg9hch1je.apps.googleusercontent.com';
     //var BASE = '//localhost:8000/app/';
 

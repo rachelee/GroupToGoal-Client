@@ -9,13 +9,13 @@
 
 <section>
   <ul class="nav nav-tabs">
-    <li role="presentation" ng-class="{active:tab===1}"><a href ng-click="getPosts(blog_ids.self)">My Notes</a></li>
+    <li role="presentation" ng-class="{active:tab===1}"><a href ng-click="getPosts(username)">My Notes</a></li>
     <li role="presentation" class="dropdown" ng-class="{active:tab===2}">
       <a class="dropdown-toggle" data-toggle="dropdown" href role="button" aria-haspopup="true" aria-expanded="false">
         Others <span class="caret"></span>
       </a>
       <ul class="dropdown-menu">
-        <li ng-repeat="personal_blog in blog_ids.others" ng-click="getPosts(personal_blog.blog_id)"><a href>{{personal_blog.name}}</a></li>
+        <li ng-repeat="username in group" ng-click="getPosts(username)"><a href>{{username}}</a></li>
       </ul>
     </li>
     <li role="presentation" ng-class="{active:tab===3}"><a href ng-click="searchTab()">Search</a></li>
@@ -30,7 +30,7 @@
     </textarea>
       <p ng-bind="error"></p>
     </form>
-    <button id="publish_button" ng-show="tab===1" class="btn btn-primary" ng-click="publish()">Publish</button>
+    <button id="publish_button" ng-show="tab===1&&setId===false" class="btn btn-primary" ng-click="publish()">Publish</button>
     <div class="input-group" ng-show="tab===3" id="search_bar">
       <input type="text" ng-model="search_result.keyword" class="form-control" placeholder="Enter Keyword Here...">
       <span class="input-group-btn">
@@ -38,21 +38,23 @@
       </span>
     </div>
   </div>
-  <!--<div ng-show="blog_ids.self!==null">-->
-    <!--<p>Your study note has not been setup yet. Please set up according to tutorial</p>-->
-    <!--<div class="input-group">-->
-      <!--<input type="text" ng-model="blog_ids.self" class="form-control" placeholder="Enter Keyword Here...">-->
-      <!--<span class="input-group-btn">-->
-        <!--<button ng-click="save_id()" class="btn btn-secondary" type="button">Set!</button>-->
-      <!--</span>-->
-    <!--</div>-->
-  <!--</div>-->
+  <div id="set_up_id" class="well" ng-show="setId===true">
+    <p>Your study note has not been setup yet. Please set up according to tutorial</p>
+    <div class="input-group">
+      <input type="text" ng-model="blog.url" class="form-control" placeholder="Enter Url Here...">
+      <span class="input-group-btn">
+        <button ng-click="save_id()" class="btn btn-secondary" type="button">Set!</button>
+      </span>
+    </div>
+    <p class="error">{{set_id_error}}</p>
+  </div>
   <div ng-repeat="post in blog.posts">
     <h3 ng-bind-html="post.title"></h3>
     <span ng-bind-html="post.author.displayname"></span>
     <span ng-bind-html="post.published"></span>
     <p ng-bind-html="post.content"></p>
   </div>
+  <p class="error">{{post_error}}</p>
 </div>
 </body>
 </html>

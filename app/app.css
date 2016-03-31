@@ -140,3 +140,12 @@ body {
 #search_bar{
   margin-top: 10px;
 }
+
+#set_up_id{
+  margin:1em;
+}
+
+.error{
+  color:red;
+  margin-top:10px
+}

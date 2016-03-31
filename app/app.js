@@ -51,7 +51,7 @@ config(['$routeProvider', function($routeProvider) {
     GAuth.checkAuth().then(
         function (user) {
           console.log(user.name + ' is login')
-          window.location.href='#/main_dashboard'; // an example of action if it's possible to
+          //window.location.href='#/main_dashboard'; // an example of action if it's possible to
           // authenticate user at startup of the application
         },
         function() {
@@ -66,6 +66,9 @@ config(['$routeProvider', function($routeProvider) {
         window.location.href='#/login';
       });
     };
+
+    $rootScope.username = "Xiaoxiao Li"
+    $rootScope.group=["Yue Shen", "Dan Su", "Wei Si"];
   }
 ]);
 

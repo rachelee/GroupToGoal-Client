@@ -1,78 +1,60 @@
 
 <html>
 <head>
-  <script>
-
-
-    function makeRequest() {
-      var blog_name_request = gapi.client.blogger.blogs.get({
-        'blogId': '6398562378207461363'
-      });
-
-      var blog_content_request = gapi.client.blogger.posts.list({
-        'blogId': '6398562378207461363',
-      });
-
-
-      blog_name_request.then(function(response) {
-        document.getElementById('blog_title').innerHTML = response.result.name;
-        document.getElementById('description').innerHTML = response.result.description;
-        console.log(response);
-      }, function(reason) {
-        console.log('Error: ' + reason.result.error.message);
-      });
-
-
-      blog_content_request.then(function(response) {
-        var items = response.result.items;
-        if(items!=undefined){
-          for (var i=0;i<items.length;i++){
-            var item = items[i];
-            var posts = document.getElementById('results');
-            var blog_item = document.createElement('div');
-            var title = document.createElement('h3');
-            var content = document.createElement('div')
-            content.setAttribute("id", "content"+i)
-            title.appendChild(document.createTextNode(item.title));
-            blog_item.appendChild(title);
-            blog_item.appendChild(title);
-            blog_item.appendChild(content)
-            posts.appendChild(blog_item);
-            document.getElementById('content'+i).innerHTML = item.content;
-          }
-        }
-        //appendResults(response.result);
-        console.log(response);
-      }, function(reason) {
-        console.log('Error: ' + reason.result.error.message);
-      });
-      //https://www.googleapis.com/blogger/v3/blogs/blogId/posts
-    }
-
-    function init() {
-      gapi.client.setApiKey('AIzaSyCJYQP-csp86STMc70_G_2Wuz18GhAOntM');
-      gapi.client.load('blogger', 'v3').then(makeRequest);
-    }
-  </script>
-  <script src="https://apis.google.com/js/client.js?onload=init"></script>
+  <!--<script src="https://apis.google.com/js/client.js?onload=init"></script>-->
+  <!--<script src="study_notes/blogger_access.js"></script>-->
 
 </head>
 <body ng-controller="StudyNotesCtrl">
-<div>
-  <div ng-show="visible" class="form-group field" >
-    <input class="editable title form-control form-control-no-border" placeholder="Title">
-    <textarea ng-model="tinymce" ui-tinymce="tinymceOptions" ng-change="updateHtml()" class="editable form-control form-control-no-border" rows="20" placeholder="Write down your note...">
-    </textarea>
-  </div>
-  <div ng-bind-html="tinymceHtml"></div>
-  <button ng-click="publish()">Publish</button>
-  <h1 id ="blog_title"></h1>
-  <p id="description"></p>
-</div>
+
+<section>
+  <ul class="nav nav-tabs">
+    <li role="presentation" ng-class="{active:tab===1}"><a href ng-click="getPosts(username)">My Notes</a></li>
+    <li role="presentation" class="dropdown" ng-class="{active:tab===2}">
+      <a class="dropdown-toggle" data-toggle="dropdown" href role="button" aria-haspopup="true" aria-expanded="false">
+        Others <span class="caret"></span>
+      </a>
+      <ul class="dropdown-menu">
+        <li ng-repeat="username in group" ng-click="getPosts(username)"><a href>{{username}}</a></li>
+      </ul>
+    </li>
+    <li role="presentation" ng-class="{active:tab===3}"><a href ng-click="searchTab()">Search</a></li>
+  </ul>
+</section>
 
 <div id="results">
-  <ngPost ng-model="blogPosts"></ngPost>
-
+  <div>
+    <form ng-show="visible&&tab===1" class="form-group field" >
+      <input required class="editable title form-control form-control-no-border" ng-model = "newPost.title" placeholder="Title">
+    <textarea required ng-model="newPost.content" ui-tinymce="tinymceOptions"  class="editable form-control form-control-no-border" rows="20" placeholder="Write down your note...">
+    </textarea>
+      <p ng-bind="error"></p>
+    </form>
+    <button id="publish_button" ng-show="tab===1&&setId===false" class="btn btn-primary" ng-click="publish()">Publish</button>
+    <div class="input-group" ng-show="tab===3" id="search_bar">
+      <input type="text" ng-model="search_result.keyword" class="form-control" placeholder="Enter Keyword Here...">
+      <span class="input-group-btn">
+        <button ng-click="search()" class="btn btn-secondary" type="button">Go!</button>
+      </span>
+    </div>
+  </div>
+  <div id="set_up_id" class="well" ng-show="setId===true">
+    <p>Your study note has not been setup yet. Please set up according to tutorial</p>
+    <div class="input-group">
+      <input type="text" ng-model="blog.url" class="form-control" placeholder="Enter Url Here...">
+      <span class="input-group-btn">
+        <button ng-click="save_id()" class="btn btn-secondary" type="button">Set!</button>
+      </span>
+    </div>
+    <p class="error">{{set_id_error}}</p>
+  </div>
+  <div ng-repeat="post in blog.posts">
+    <h3 ng-bind-html="post.title"></h3>
+    <span ng-bind-html="post.author.displayname"></span>
+    <span ng-bind-html="post.published"></span>
+    <p ng-bind-html="post.content"></p>
+  </div>
+  <p class="error">{{post_error}}</p>
 </div>
 </body>
 </html>

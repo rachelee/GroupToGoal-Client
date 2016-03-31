@@ -49,8 +49,8 @@
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
             <li><a href="#">Switch Group</a></li>
-            <li><a href="#">Display Username</a></li>
-            <li><a href="#">Log out</a></li>
+            <li><a href="#">{{gdata.getUser().name}}</a></li>
+            <li ng-show="gdata.getUser()"><a href="#" ng-click="logout()">Log out</a></li>
           </ul>
           <form class="navbar-form navbar-right">
             <input type="text" class="form-control" placeholder="Search...">
@@ -91,7 +91,6 @@
     <!-- Angular JavaScript
    <script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
    -->
-    
     <script src="bower_components/angular/angular.js"></script>
     <script src="bower_components/angular-route/angular-route.js"></script>
     <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
@@ -101,12 +100,16 @@
     <script src="study_notes/study_notes.js"></script>
     <script src="chat_room/chat_room.js"></script>
     <script src="files/files.js"></script>
+    <script src="login/login.js"></script>
     <script src="components/version/version.js"></script>
     <script src="components/version/version-directive.js"></script>
     <script src="components/version/interpolate-filter.js"></script>
     <script src="bower_components/prism/themes/prism.css"></script>
     <script type="text/javascript" src="bower_components/tinymce-dist/tinymce.js"></script>
     <script type="text/javascript" src="bower_components/angular-ui-tinymce/src/tinymce.js"></script>
+    <script type="text/javascript" src="bower_components/angular-google-gapi/dist/angular-google-gapi.js"></script>
+    <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular-cookies.min.js"></script>
   </body>
   </body>
 </html>

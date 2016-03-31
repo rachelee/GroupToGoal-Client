@@ -1,7 +1,6 @@
 "use strict"
 
 var app = angular.module('myApp.study_notes', ['ngRoute']);
-//var blogURL = 'http://groutogoalnotes.blogspot.com/';
 app.config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/study_notes', {
     templateUrl: 'study_notes/study_notes.html',
@@ -112,63 +111,6 @@ app.controller('StudyNotesCtrl', ['$scope','GApi', '$http', '$rootScope','$q', '
 
     //Get self posts
     $scope.tab = 1;
-    //function initPosts(){
-    //    GApi.executeAuth('blogger', 'posts.list', {'blogId': $rootScope.blog_ids.self}).then( function(resp) {
-    //        $scope.value = resp;
-    //        $scope.blog.posts = $scope.value.items;
-    //        console.log($scope.value)
-    //    }, function() {
-    //        console.log("error get post list failed");
-    //    });
-    //}
-
-    //$rootScope.blog_ids={};
-    //$rootScope.blog_ids.self={};
-    //$rootScope.blog_ids.others = [];
-    //function getIds(initPosts){
-    //    //populate the ids in the blog_ids
-    //    $http({
-    //        method: 'GET',
-    //        url: 'http://localhost:3000/blog_id',
-    //        params: {user: $rootScope.group.self}
-    //    }).then(function successCallback(response) {
-    //        $rootScope.blog_ids.self.name=response.google_username;
-    //        $rootScope.blog_ids.self.blog_id=response.blog_id;
-    //        console.log($rootScope.blog_ids);
-    //    }, function errorCallback(response) {
-    //        console.log(response);
-    //        $rootScope.blog_ids.self.name=null;
-    //    });
-    //
-    //    for(var i in $rootScope.group.others){
-    //        var obj = {};
-    //        $http({
-    //            method: 'GET',
-    //            url: 'http://localhost:3000/blog_id',
-    //            params: {user: $rootScope.group.others[i]}
-    //        }).then(function successCallback(response) {
-    //            console.log(response);
-    //            obj.name=response.google_username;
-    //            obj.blog_id=response.blog_id;
-    //            $rootScope.blog_ids.others.push(obj);
-    //        }, function errorCallback(response) {
-    //            console.log(response);
-    //            obj.name = $rootScope.group.others[i];
-    //            obj.blog_ids = null;
-    //        });
-    //    }
-    //    initPosts();
-    //}
-    ////put blog ids into rootscope
-    //getIds(initPosts);
-
-    //GApi.executeAuth('blogger', 'posts.list', {'blogId': $rootScope.blog_ids.self}).then(function (resp) {
-    //    $scope.value = resp;
-    //    $scope.blog.posts = $scope.value.items;
-    //    console.log($scope.value)
-    //}, function () {
-    //    console.log("error get post list failed");
-    //});
 
 
     $scope.blog = {};
@@ -193,20 +135,12 @@ app.controller('StudyNotesCtrl', ['$scope','GApi', '$http', '$rootScope','$q', '
     initPost();
 
     $scope.getPosts = function(username){
-        //if(id===$rootScope.blog_ids.self){
-        //    $scope.tab=1;
-        //}
-        //else{
-        //    $scope.tab=2;
-        //}
-        //
-        //GApi.executeAuth('blogger', 'posts.list', {'blogId':id}).then( function(resp) {
-        //    $scope.value = resp;
-        //    $scope.blog.posts = $scope.value.items;
-        //    console.log($scope.value)
-        //}, function() {
-        //    console.log("error get post list failed");
-        //});
+        if(username === $rootScope.username){
+            $scope.tab=1;
+        }
+        else{
+            $scope.tab=2;
+        }
         BlogPostsService.getPost(username).then(function(posts) {
                 $scope.post_error = undefined;
                 $scope.blog.posts = posts;
@@ -270,23 +204,8 @@ app.controller('StudyNotesCtrl', ['$scope','GApi', '$http', '$rootScope','$q', '
     };
 
 
-    //Get blog id
-    //$scope.getPosts = function(){
-    //    //Get blog id from URL
-    //    GApi.executeAuth('blogger', 'blogs.getByUrl', {'url': blogURL}).then( function(resp) {
-    //        $scope.value = resp;
-    //        $scope.blog.id = $scope.value.id;
-    //        console.log($scope.blog.id);
-    //        $scope.blog.name = $scope.value.result.name;
-    //
-    //    }, function() {
-    //        console.log("error :(");
-    //    });
-    //};
-
-
-
     $scope.searchTab = function(){
+        $scope.post_error = undefined;
         $scope.tab=3;
         $scope.blog.posts = $scope.search_result.posts;
     }

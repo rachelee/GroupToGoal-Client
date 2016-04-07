@@ -17,8 +17,8 @@ angular.module('myApp', [
   'ngSanitize',
 ]).
 config(['$routeProvider', function($routeProvider) {
-  $routeProvider.
-      otherwise({redirectTo: '/main_dashboard'});
+  $routeProvider
+      .otherwise({ redirectTo: '/main_dashboard' });
 
 }])
 
@@ -34,8 +34,8 @@ config(['$routeProvider', function($routeProvider) {
 //  }
 //]);
 
-.run(['GAuth', 'GApi', 'GData', '$rootScope','$window','$cookies',
-  function(GAuth, GApi, GData, $rootScope, window, $cookies) {
+.run(['GAuth', 'GApi', 'GData', '$rootScope','$window','$cookies','LocalLoginService',
+  function(GAuth, GApi, GData, $rootScope, window, $cookies, LocalLoginService) {
 
     $rootScope.gdata = GData;
 
@@ -59,6 +59,16 @@ config(['$routeProvider', function($routeProvider) {
           // authenticate user at startup of the application
         }
     );
+    LocalLoginService.isLogin().then(
+        function(){
+          console.log($rootScope.isLogin);
+        },
+        function(){
+          window.location.href='#/login';
+        }
+    );
+
+
 
     $rootScope.logout = function() {
       GAuth.logout().then(function () {
@@ -67,7 +77,7 @@ config(['$routeProvider', function($routeProvider) {
       });
     };
 
-    $rootScope.username = "Xiaoxiao Li"
+    $rootScope.username = gdata.getUser().name\
     $rootScope.group=["Yue Shen", "Dan Su", "Wei Si"];
   }
 ]);

@@ -1,7 +1,22 @@
-<div class="jumbotron">
-    <h1>Login page</h1>
-    <p></p>
-    <p>
-        <a class="btn btn-lg btn-primary" ng-click="doLogin()"  href="" role="button">Login with Google</a>
-    </p>
-</div>
+<!--<div class="jumbotron">-->
+    <!--<h1>Login page</h1>-->
+    <!--<p></p>-->
+    <!--<p>-->
+        <!--<a class="btn btn-lg btn-primary" ng-click="doLogin()"  href="" role="button">Login with Google</a>-->
+    <!--</p>-->
+
+
+<!--</div>-->
+
+<div class="container" ng-controller="loginCtrl">
+    <form class="form-signin">
+        <h2 class="form-signin-heading">GroupToGoal</h2>
+        <h2 class="form-signin-heading">Please Sign In</h2>
+        <label for="username" class="sr-only">Username</label>
+        <input ng-model="localUsername" type="text" id="username" class="form-control" placeholder="Username" required autofocus>
+        <label for="inputPassword" class="sr-only">Password</label>
+        <input ng-model="localPassword" type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+        <button class="btn btn-lg btn-primary btn-block" ng-click="doLogin()">Sign in</button>
+    </form>
+    <p>{{error}}</p>
+</div> <!-- /container -->

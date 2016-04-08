@@ -88,21 +88,11 @@ app.run(['GAuth', 'GApi', 'GData', '$rootScope','$window','$cookies','UserServic
     GAuth.setClient(CLIENT);
     GAuth.setScope('https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/blogger');
 
-    //GAuth.checkAuth().then(
-    //    function (user) {
-    //      console.log(user.name + ' is login')
-    //      //window.location.href='#/main_dashboard'; // an example of action if it's possible to
-    //      // authenticate user at startup of the application
-    //    },
-    //    function() {
-    //      window.location.href='#/login';       // an example of action if it's impossible to
-    //      // authenticate user at startup of the application
-    //    }
-    //);
     function checkAuthFirst(){
       UserService.isLogin().then(
           function(){
             console.log("ALLOW");
+            //console.log($rootScope.gdata.getUser());
            //window.location.href='#/main_dashboard';
           },
           function(){
@@ -111,7 +101,7 @@ app.run(['GAuth', 'GApi', 'GData', '$rootScope','$window','$cookies','UserServic
           }
       );
     }
-    //checkAuthFirst();
+    checkAuthFirst();
     $rootScope.$on('$stateChangeStart', function (event, next,current) {
       checkAuthFirst();
     });
@@ -129,6 +119,7 @@ app.run(['GAuth', 'GApi', 'GData', '$rootScope','$window','$cookies','UserServic
 
     //$rootScope.username = gdata.getUser().name;
     $rootScope.group=["Yue Shen", "Dan Su", "Wei Si"];
+
   }
 ]);
 

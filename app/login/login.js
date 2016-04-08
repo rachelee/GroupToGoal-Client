@@ -77,7 +77,7 @@ app.controller('loginCtrl', ['$scope', 'GAuth', 'GData', '$window', '$cookies','
 
 
         var ifLogin = function() {
-            $cookies.put('userId', GData.getUserId());
+            $cookies.put('userId', GData.getUser().name);
             window.location.href='#/main_dashboard';
         };
 

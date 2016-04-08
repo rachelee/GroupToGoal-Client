@@ -2,8 +2,6 @@
 
 var app = angular.module('myApp.study_notes', ['ngRoute']);
 
-
-
 app.factory('BlogIdService', ["$q","$http", "GApi", function($q, $http, GApi) {
     var factory = {};
     var blog_ids = [];
@@ -93,20 +91,39 @@ app.factory('BlogPostsService', ["GApi", "$http", "$q", "BlogIdService", functio
         return deferred.promise;
     }
 
+    factory.searchPost = function(username, keyword, postList) {
+        var deferred = $q.defer();
+        BlogIdService.getId(username).then(
+            function(blogId){
+                GApi.executeAuth('blogger', 'posts.search', {'blogId': blogId, 'q': keyword}).then(
+                    function (resp) {
+                    postList.push.apply(postList,resp.items);
+                }, function () {
+                    console.log("error get post list failed");
+                });
+            },
+            function(msg){
+                //console.log(msg);
+                deferred.reject(msg);
+            }
+        );
+        return deferred.promise;
+    }
+
     return factory;
 }]);
 
 
-app.controller('StudyNotesCtrl', ['$scope','GApi', '$http', '$rootScope','$q', 'BlogPostsService','BlogIdService',
-    function($scope, GApi, $http, $rootScope, $q, BlogPostsService, BlogIdService) {
+app.controller('StudyNotesCtrl', ['$scope','GApi', '$http', '$rootScope','$q', 'BlogPostsService','BlogIdService','$cookies',
+    function($scope, GApi, $http, $rootScope, $q, BlogPostsService, BlogIdService, $cookies) {
     //$rootScope.blog_ids = {
     //    'self': "6398562378207461363",
     //    'others': [{'name': 'Yue Shen', 'blog_id': "3213900"}, {'name': 'Dan Su', 'blog_id': "5580000621368117250"}]
     //};
-    $rootScope.menu=true;
     //Get self posts
+    $rootScope.username=$cookies.get('userId');
+        console.log($rootScope.username);
     $scope.tab = 1;
-
 
     $scope.blog = {};
     $scope.blog.posts=[]; //current displayed post list, can be from a user's blog or search result
@@ -156,7 +173,7 @@ app.controller('StudyNotesCtrl', ['$scope','GApi', '$http', '$rootScope','$q', '
             $scope.visible = !$scope.visible
         else{
             $scope.newPost.published=new Date();
-            $scope.newPost.author.displayname=$rootScope.gdata.getUser().name;//To Do: later add username here
+            $scope.newPost.author.displayname=$rootScope.username;//To Do: later add username here
             //console.log(post);
             console.log($scope.newPost.title);
             console.log($scope.newPost.content);
@@ -207,19 +224,20 @@ app.controller('StudyNotesCtrl', ['$scope','GApi', '$http', '$rootScope','$q', '
 
     function executeSearch(){
         $scope.search_result.posts = [];
-        var blog_id_list = [];
-        blog_id_list.push($rootScope.blog_ids.self);
-        for(var i in $rootScope.blog_ids.others){
-            blog_id_list.push($rootScope.blog_ids.others[i].blog_id);
+        var username_list = [];
+        username_list.push($rootScope.username);
+        for(var i in $rootScope.group){
+            username_list.push($rootScope.group[i]);
         }
 
-        for(var i in blog_id_list) {
-            GApi.executeAuth('blogger', 'posts.search', {'blogId': blog_id_list[i], 'q': $scope.search_result.keyword}).then(function (resp) {
-                $scope.value = resp;
-                $scope.search_result.posts.push.apply($scope.search_result.posts,$scope.value.items);
-            }, function () {
-                console.log("error get post list failed");
-            });
+        for(var i in username_list) {
+            //GApi.executeAuth('blogger', 'posts.search', {'blogId': blog_id_list[i], 'q': $scope.search_result.keyword}).then(function (resp) {
+            //    $scope.value = resp;
+            //    $scope.search_result.posts.push.apply($scope.search_result.posts,$scope.value.items);
+            //}, function () {
+            //    console.log("error get post list failed");
+            //});
+            BlogPostsService.searchPost(username_list[i], $scope.search_result.keyword, $scope.search_result.posts)
         }
         return $q(function(resolve, reject){
             setTimeout(function(){
@@ -244,7 +262,7 @@ app.controller('StudyNotesCtrl', ['$scope','GApi', '$http', '$rootScope','$q', '
     }
 
     $scope.save_id=function(){
-        BlogIdService.setId($rootScope.username, $scope.blog.url).then(
+        BlogIdService.setId($scope.username, $scope.blog.url).then(
             function(){
                 initPost();
                 $scope.setId=false;

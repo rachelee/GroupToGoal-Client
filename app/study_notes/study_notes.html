@@ -10,7 +10,7 @@
         Others <span class="caret"></span>
       </a>
       <ul class="dropdown-menu">
-        <li ng-repeat="username in group" ng-click="getPosts(username)"><a href>{{username}}</a></li>
+        <li ng-repeat="user in group" ng-click="getPosts(user)"><a href>{{user}}</a></li>
       </ul>
     </li>
     <li role="presentation" ng-class="{active:tab===3}"><a href ng-click="searchTab()">Search</a></li>

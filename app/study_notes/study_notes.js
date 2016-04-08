@@ -1,12 +1,7 @@
 "use strict"
 
 var app = angular.module('myApp.study_notes', ['ngRoute']);
-app.config(['$routeProvider', function($routeProvider) {
-  $routeProvider.when('/study_notes', {
-    templateUrl: 'study_notes/study_notes.html',
-    controller: 'StudyNotesCtrl'
-  });
-}]);
+
 
 
 app.factory('BlogIdService', ["$q","$http", "GApi", function($q, $http, GApi) {

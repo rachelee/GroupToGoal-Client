@@ -3,13 +3,6 @@
  */
 var app = angular.module('myApp.login', ['ngRoute']);
 
-app.config(['$routeProvider', function($routeProvider) {
-    $routeProvider.when('/login', {
-        templateUrl: 'login/login.html',
-        controller: 'loginCtrl'
-    });
-}])
-
 app.factory('UserService', ["$http", "$q", "GAuth","$cookies", "$rootScope",function($http, $q, GAuth, $cookies, $rootScope) {
     var factory = {};
     var username = undefined;
@@ -85,7 +78,7 @@ app.controller('loginCtrl', ['$scope', 'GAuth', 'GData', '$window', '$cookies','
 
         var ifLogin = function() {
             $cookies.put('userId', GData.getUserId());
-            window.location.href='#/';
+            window.location.href='#/main_dashboard';
         };
 
         $scope.doLogin = function() {

@@ -1,13 +1,10 @@
 'use strict';
 
 // Declare app level module which depends on views, and components
-angular.module('myApp', [
-  'ui.router',
-  'ngRoute',
+var app = angular.module('myApp', [
   'ngCookies',
   'angular-google-gapi',
   'myApp.main_dashboard',
-  'myApp.QandA',
   'myApp.study_notes',
   'myApp.chat_room',
   'myApp.files',
@@ -15,12 +12,54 @@ angular.module('myApp', [
   'myApp.login',
   'ui.tinymce',
   'ngSanitize',
-]).
-config(['$routeProvider', function($routeProvider) {
-  $routeProvider
-      .otherwise({ redirectTo: '/main_dashboard' });
+  'ui.router',
+]);
+app.config(function($stateProvider, $urlRouterProvider) {
+      $urlRouterProvider.otherwise('/main_dashboard');
+      $stateProvider
+          .state('main_dashboard', {
+            url: '/main_dashboard',
+            //template:'How to use this?'
+            views: {
+              'top' : { templateUrl: 'header.html' },
+              'side': { templateUrl: 'side.html' },
+              'content' : { templateUrl: 'main_dashboard/main_dashboard.html' }
+            }
+          })
+          .state('study_notes', {
+            url: '/study_notes',
+            views: {
+              'top' : { templateUrl: 'header.html' },
+              'side': { templateUrl: 'side.html' },
+              'content' : { templateUrl: 'study_notes/study_notes.html' }
+            }
+          })
+          .state('files', {
+            url: '/files',
+            views: {
+              'top' : { templateUrl: 'header.html' },
+              'side': { templateUrl: 'side.html' },
+              'content' : { templateUrl: 'files/files.html' }
+            }
+          })
+          .state('chat_room', {
+            url: '/chat_room',
+            views: {
+              'top' : { templateUrl: 'header.html' },
+              'side': { templateUrl: 'side.html' },
+              'content' : { templateUrl: 'chat_room/chat_room.html' }
+            }
+          })
+          .state('login', {
+            url: '/login',
+            views: {
+              'top' : {},
+              'side': {},
+              'content' : { templateUrl: 'login/login.html' }
+            }
+          });
 
-}])
+})
 
 
 
@@ -36,8 +75,8 @@ config(['$routeProvider', function($routeProvider) {
 //  }
 //]);
 
-.run(['GAuth', 'GApi', 'GData', '$rootScope','$window','$cookies','UserService',
-  function(GAuth, GApi, GData, $rootScope, window, $cookies, UserService) {
+app.run(['GAuth', 'GApi', 'GData', '$rootScope','$window','$cookies','UserService','$state',
+  function(GAuth, GApi, GData, $rootScope, window, $cookies, UserService, $state) {
 
     $rootScope.gdata = GData;
 
@@ -60,27 +99,31 @@ config(['$routeProvider', function($routeProvider) {
     //      // authenticate user at startup of the application
     //    }
     //);
-    $rootScope.$on('$routeChangeStart', function (event, next,current) {
+    function checkAuthFirst(){
       UserService.isLogin().then(
           function(){
             console.log("ALLOW");
-            window.location.href='#/main_dashboard';
+           //window.location.href='#/main_dashboard';
           },
           function(){
             console.log('DENY : Redirecting to Login');
             window.location.href='#/login';
           }
       );
+    }
+    //checkAuthFirst();
+    $rootScope.$on('$stateChangeStart', function (event, next,current) {
+      checkAuthFirst();
     });
 
     $rootScope.logout = function() {
       //console.log("LocalUser: "+$cookies.get('localUserId'));
+      $state.go('login');
       $cookies.remove('localUserId');
       //console.log("LocalUser: "+$cookies.get('localUserId'));
-      GAuth.logout().then(function () {
-        $cookies.remove('userId');
-
-      });
+      //GAuth.logout().then(function () {
+      //  $cookies.remove('userId');
+      //});
     };
 
 
@@ -89,31 +132,3 @@ config(['$routeProvider', function($routeProvider) {
   }
 ]);
 
-//baseApp.run(['GAuth', 'GApi', 'GData', '$state', '$rootScope',
-//  function(GAuth, GApi, Gdata, $state, $rootScope) {
-//
-//    $rootScope.gdata = GData;
-//
-//    var CLIENT = '339048773288-fgu6hiji5nkolmugeedhs7s176ptsjh5.apps.googleusercontent.com';
-//    var BASE = '//localhost:8000/app';
-//
-//    GApi.load('myContactApi', 'v1', BASE);
-//    GApi.load('blogger', 'v3'); // for google api (https://developers.google.com/apis-explorer/)
-//
-//    GAuth.setClient(CLIENT);
-//    GAuth.setScope("https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/blogger"); // default scope is only https://www.googleapis.com/auth/userinfo.email
-//
-//    GAuth.checkAuth().then(
-//        function (user) {
-//          console.log(user.name + 'is login')
-//          $state.go('myApp.study_notes'); // an example of action if it's possible to
-//          // authenticate user at startup of the application
-//        },
-//        function() {
-//          $state.go('myApp.dashboard');       // an example of action if it's impossible to
-//          // authenticate user at startup of the application
-//        }
-//    );
-//
-//  }
-//]);

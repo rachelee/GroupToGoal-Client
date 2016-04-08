@@ -6,6 +6,6 @@ angular.module('myApp.chat_room', ['ngRoute'])
         controller: 'ChatRoomCtrl'
       });
     }])
-    .controller('ChatRoomCtrl', [ '$scope', function($scope) {
-
+    .controller('ChatRoomCtrl', [ '$scope','$rootScope', function($scope, $rootScope) {
+        $rootScope.menu=true;
     }]);

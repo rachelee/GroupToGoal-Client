@@ -10,7 +10,7 @@ app.config(['$routeProvider', function($routeProvider) {
     });
 }])
 
-app.factory('LocalLoginService', ["$http", "$q", "GData","$rootScope", function($http, $q, GData, $rootScope) {
+app.factory('UserService', ["$http", "$q", "GAuth","$cookies", "$rootScope",function($http, $q, GAuth, $cookies, $rootScope) {
     var factory = {};
     var username = undefined;
     factory.localLogin = function(localUsername, localPassword) {
@@ -25,7 +25,9 @@ app.factory('LocalLoginService', ["$http", "$q", "GData","$rootScope", function(
             //console.log(response);
             if(response.data.message=="Sign in successfully!") {
                 username=localUsername;
+                $cookies.put('localUserId', username);
                 deferred.resolve(response);
+
             }
             else{
                 deferred.reject(response.data.message);
@@ -38,55 +40,62 @@ app.factory('LocalLoginService', ["$http", "$q", "GData","$rootScope", function(
     };
 
     factory.getUsername=function(){
-        return username;
+        return $cookies.get('localUserId');
     }
-    factory.isLocalLogin=function(){
-        return username===undefined;
+    function isLocalLogin(){
+        return $cookies.get('localUserId')!==undefined;
     }
     factory.isLogin = function(){
         var deferred = $q.defer();
-        if(GData.isLogin()&&this.isLocalLogin()){
-            $rootScope.isLogin=true;
-            deferred.resolve();
-        }
-        else{
-            deferred.reject();
-        }
+        //console.log(isLocalLogin());
+        GAuth.checkAuth().then(
+            function(user){
+                //console.log("Google account "+ user.name + ' is login');
+                if(isLocalLogin()){
+                    deferred.resolve();
+                    //console.log("Local account " + this.username + " is login");
+                }
+                else{
+                    deferred.reject("Local not logged in.");
+                }
+            },
+            function(){
+                deferred.reject("Google not logged in.");
+            }
+        );
         return deferred.promise;
     }
     return factory;
 }]);
 
-app.controller('loginCtrl', ['$scope', 'GAuth', 'GData', '$window', '$cookies','LocalLoginService','$rootScope',
-    function ($scope, GAuth, GData, window, $cookies, LocalLoginService, $rootScope) {
-        LocalLoginService.isLogin().then(
-            function(){
-                console.log("here");
-                window.location.href='#/';
-            },
-            function(){
-                console.log("Not logged in");
-            }
-        );
+app.controller('loginCtrl', ['$scope', 'GAuth', 'GData', '$window', '$cookies','UserService','$rootScope',
+    function ($scope, GAuth, GData, window, $cookies, UserService, $rootScope) {
+        $rootScope.menu=false;
+        //console.log("Login controller");
+        //UserService.isLogin().then(
+        //    function(){
+        //        //console.log("here");
+        //        window.location.href='#/main_dashboard';
+        //    },
+        //    function(){
+        //        //console.log("Not logged in");
+        //    }
+        //);
 
 
         var ifLogin = function() {
             $cookies.put('userId', GData.getUserId());
-            $cookies.put('localUserId', LocalLoginService.getUsername());
-            $rootScope.isLogin=true;
             window.location.href='#/';
         };
 
         $scope.doLogin = function() {
-            LocalLoginService.localLogin($scope.localUsername, $scope.localPassword).then(
+            UserService.localLogin($scope.localUsername, $scope.localPassword).then(
                 function(){
                     GAuth.checkAuth().then(
                         function () {
-                            console.log("1");
                             ifLogin();
                         },
                         function() {
-                            console.log("2");
                             GAuth.login().then(function(){
                                 ifLogin();
                             },

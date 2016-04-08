@@ -108,7 +108,7 @@ app.controller('StudyNotesCtrl', ['$scope','GApi', '$http', '$rootScope','$q', '
     //    'self': "6398562378207461363",
     //    'others': [{'name': 'Yue Shen', 'blog_id': "3213900"}, {'name': 'Dan Su', 'blog_id': "5580000621368117250"}]
     //};
-
+    $rootScope.menu=true;
     //Get self posts
     $scope.tab = 1;
 

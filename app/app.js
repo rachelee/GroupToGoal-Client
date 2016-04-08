@@ -23,6 +23,8 @@ config(['$routeProvider', function($routeProvider) {
 }])
 
 
+
+
 //baseApp.run(['GApi', 'GAuth',
 //  function(GApi, GAuth) {
 //    var BASE = 'https://myGoogleAppEngine.appspot.com/_ah/api';
@@ -34,11 +36,10 @@ config(['$routeProvider', function($routeProvider) {
 //  }
 //]);
 
-.run(['GAuth', 'GApi', 'GData', '$rootScope','$window','$cookies','LocalLoginService',
-  function(GAuth, GApi, GData, $rootScope, window, $cookies, LocalLoginService) {
+.run(['GAuth', 'GApi', 'GData', '$rootScope','$window','$cookies','UserService',
+  function(GAuth, GApi, GData, $rootScope, window, $cookies, UserService) {
 
     $rootScope.gdata = GData;
-
 
     var CLIENT = '339048773288-d1uc4190g7stc84rcm22l4bhg9hch1je.apps.googleusercontent.com';
     //var BASE = '//localhost:8000/app/';
@@ -48,36 +49,42 @@ config(['$routeProvider', function($routeProvider) {
     GAuth.setClient(CLIENT);
     GAuth.setScope('https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/blogger');
 
-    GAuth.checkAuth().then(
-        function (user) {
-          console.log(user.name + ' is login')
-          //window.location.href='#/main_dashboard'; // an example of action if it's possible to
-          // authenticate user at startup of the application
-        },
-        function() {
-          window.location.href='#/login';       // an example of action if it's impossible to
-          // authenticate user at startup of the application
-        }
-    );
-    LocalLoginService.isLogin().then(
-        function(){
-          console.log($rootScope.isLogin);
-        },
-        function(){
-          window.location.href='#/login';
-        }
-    );
-
-
+    //GAuth.checkAuth().then(
+    //    function (user) {
+    //      console.log(user.name + ' is login')
+    //      //window.location.href='#/main_dashboard'; // an example of action if it's possible to
+    //      // authenticate user at startup of the application
+    //    },
+    //    function() {
+    //      window.location.href='#/login';       // an example of action if it's impossible to
+    //      // authenticate user at startup of the application
+    //    }
+    //);
+    $rootScope.$on('$routeChangeStart', function (event, next,current) {
+      UserService.isLogin().then(
+          function(){
+            console.log("ALLOW");
+            window.location.href='#/main_dashboard';
+          },
+          function(){
+            console.log('DENY : Redirecting to Login');
+            window.location.href='#/login';
+          }
+      );
+    });
 
     $rootScope.logout = function() {
+      //console.log("LocalUser: "+$cookies.get('localUserId'));
+      $cookies.remove('localUserId');
+      //console.log("LocalUser: "+$cookies.get('localUserId'));
       GAuth.logout().then(function () {
         $cookies.remove('userId');
-        window.location.href='#/login';
+
       });
     };
 
-    $rootScope.username = gdata.getUser().name\
+
+    //$rootScope.username = gdata.getUser().name;
     $rootScope.group=["Yue Shen", "Dan Su", "Wei Si"];
   }
 ]);

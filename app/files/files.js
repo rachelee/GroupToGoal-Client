@@ -6,6 +6,6 @@ angular.module('myApp.files', ['ngRoute'])
             controller: 'FilesCtrl'
         });
     }])
-    .controller('FilesCtrl', [ '$scope', function($scope) {
-
+    .controller('FilesCtrl', [ '$scope', '$rootScope', function($scope, $rootScope) {
+        $rootScope.menu=true;
     }]);

@@ -51,7 +51,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
             }
           })
           .state('login', {
-            url: '/login',
+            url: '/',
             views: {
               'top' : {},
               'side': {},
@@ -97,7 +97,7 @@ app.run(['GAuth', 'GApi', 'GData', '$rootScope','$window','$cookies','UserServic
           },
           function(){
             console.log('DENY : Redirecting to Login');
-            window.location.href='#/login';
+            window.location.href='#/';
           }
       );
     }

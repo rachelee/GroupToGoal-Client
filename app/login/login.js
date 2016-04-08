@@ -95,7 +95,7 @@ app.controller('loginCtrl', ['$scope', 'GAuth', 'GData', '$window', '$cookies','
                             function(resp){
                                 console.log(resp);
                                 $scope.error=res;
-                                window.location.href='#/login';
+                                window.location.href='#/';
                             });
                         }
                     );
@@ -103,7 +103,7 @@ app.controller('loginCtrl', ['$scope', 'GAuth', 'GData', '$window', '$cookies','
                 function(res){
                     console.log(res);
                     $scope.error=res;
-                    window.location.href='#/login';
+                    window.location.href='#/';
                 }
             );
 

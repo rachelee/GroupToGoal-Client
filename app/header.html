@@ -1,4 +1,4 @@
-<nav class="navbar navbar-inverse navbar-fixed-top">
+<nav class="navbar navbar-inverse navbar-fixed-top" ng-controller="AppCtrl">
     <div class="container-fluid">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -11,8 +11,13 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="#">Switch Group</a></li>
-                <li><a href="#">{{gdata.getUser().name}}</a></li>
+                <li class="Switch Group" ng-click="switchGroup(group)">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Switch Group<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li ng-repeat="group in groups"><a ng-click="getGroupMembers(group)">{{group}}</a></li>
+                    </ul>
+                </li>
+                <li><a ui-sref=="group_management">{{gdata.getUser().name}}</a></li>
                 <li ng-show="gdata.getUser()"><a href="#" ng-click="logout()">Log out</a></li>
             </ul>
             <form class="navbar-form navbar-right">

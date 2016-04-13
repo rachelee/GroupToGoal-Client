@@ -8,7 +8,7 @@
 
 <!--</div>-->
 
-<div class="container" ng-controller="loginCtrl">
+<!-- <div class="container" ng-controller="loginCtrl">
     <form class="form-signin">
         <h2 class="form-signin-heading">GroupToGoal</h2>
         <h2 class="form-signin-heading">Please Sign In</h2>
@@ -19,4 +19,41 @@
         <button class="btn btn-lg btn-primary btn-block" ng-click="doLogin()">Sign in</button>
     </form>
     <p>{{error}}</p>
-</div> <!-- /container -->
+</div>  --><!-- /container -->
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Form</title>
+<!--         <link rel="stylesheet" href="css/normalize.css"> -->
+    <link href='http://fonts.googleapis.com/css?family=Nunito:400,300' rel='stylesheet' type='text/css'>
+    <link rel = "stylesheet" type = "text/css" href = "static/css/signup.css">
+<!--         <link rel="stylesheet" href="css/main.css"> -->
+</head>
+<body>
+
+    <div ng-controller="LoginCtrl">
+        <button class="button button1">Group To Goal</button>
+        <button class="button button2" ng-click="toLogin()">Login</button>
+        <button class="button button3" ng-click="toSignup()">Sign up</button>
+
+    <form>
+  
+    <h1>Login</h1>
+    
+    <fieldset>
+
+        <label for="name">Name:</label>
+        <input ng-model="localUsername" type="text" id="name" name="user_name" required autofocus>
+          
+        <label for="password">Password:</label>
+        <input ng-model="localPassword" type="password" id="password" name="user_password" required>
+
+    </fieldset>
+        
+        <button class="button button4" ng-click="doLogin()">Login</button>
+    </form>
+
+    </div>
+      
+</body>

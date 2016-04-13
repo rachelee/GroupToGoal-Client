@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 var app = angular.module('myApp.study_notes', ['ngRoute']);
 
@@ -121,7 +121,6 @@ app.controller('StudyNotesCtrl', ['$scope','GApi', '$http', '$rootScope','$q', '
     //    'others': [{'name': 'Yue Shen', 'blog_id': "3213900"}, {'name': 'Dan Su', 'blog_id': "5580000621368117250"}]
     //};
     //Get self posts
-    $rootScope.username=$cookies.get('userId');
         console.log($rootScope.username);
     $scope.tab = 1;
 

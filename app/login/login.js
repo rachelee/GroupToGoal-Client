@@ -17,6 +17,7 @@ app.factory('UserService', ["$http", "$q", "GAuth","$cookies", "$rootScope",func
         }).then(function successCallback(response) {
             //console.log(response);
             if(response.data.message=="Sign in successfully!") {
+                console.log(response.data.message);
                 username=localUsername;
                 $cookies.put('localUserId', username);
                 deferred.resolve(response);
@@ -42,8 +43,8 @@ app.factory('UserService', ["$http", "$q", "GAuth","$cookies", "$rootScope",func
         var deferred = $q.defer();
         //console.log(isLocalLogin());
         GAuth.checkAuth().then(
-            function(user){
-                //console.log("Google account "+ user.name + ' is login');
+            function(){
+                //console.log("Google account "+ user + ' is login');
                 if(isLocalLogin()){
                     deferred.resolve();
                     //console.log("Local account " + this.username + " is login");
@@ -61,20 +62,19 @@ app.factory('UserService', ["$http", "$q", "GAuth","$cookies", "$rootScope",func
     return factory;
 }]);
 
-app.controller('loginCtrl', ['$scope', 'GAuth', 'GData', '$window', '$cookies','UserService','$rootScope',
-    function ($scope, GAuth, GData, window, $cookies, UserService, $rootScope) {
-        $rootScope.menu=false;
-        //console.log("Login controller");
-        //UserService.isLogin().then(
-        //    function(){
-        //        //console.log("here");
-        //        window.location.href='#/main_dashboard';
-        //    },
-        //    function(){
-        //        //console.log("Not logged in");
-        //    }
-        //);
+app.controller('LoginCtrl', ['$scope', 'GAuth', 'GApi', 'GData', '$cookies','UserService','$rootScope',
+    function ($scope, GAuth, GApi, GData, $cookies, UserService, $rootScope, $state) {
+        //UserService.isLogin().then(function(){
+        //    window.location.href = '#/main_dashboard';
+        //});
 
+        $scope.toLogin = function () {
+            window.location.href = '#/login';
+        };
+
+        $scope.toSignup = function () {
+            window.location.href = '#/signup';
+        };
 
         var ifLogin = function() {
             $cookies.put('userId', GData.getUser().name);

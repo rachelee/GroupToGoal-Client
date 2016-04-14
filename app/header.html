@@ -11,14 +11,14 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
-                <li class="Switch Group" ng-click="switchGroup(group)">
+                <li class="Switch Group">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Switch Group<span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li ng-repeat="group in groups"><a ng-click="getGroupMembers(group)">{{group}}</a></li>
+                        <li ng-repeat="group in groups"><a ng-click="getMembers(group)">{{group}}</a></li>
                     </ul>
                 </li>
-                <li><a ui-sref=="group_management">{{gdata.getUser().name}}</a></li>
-                <li ng-show="gdata.getUser()"><a href="#" ng-click="logout()">Log out</a></li>
+                <li><a ui-sref=="group_management">{{localUsername}}</a></li>
+                <li ng-show="localUsername!==undefined"><a href="#" ng-click="logout()">Log out</a></li>
             </ul>
             <form class="navbar-form navbar-right">
                 <input type="text" class="form-control" placeholder="Search...">

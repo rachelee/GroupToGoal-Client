@@ -91,24 +91,11 @@ app.config(function($stateProvider, $urlRouterProvider) {
 
 
 
+app.run(['GAuth', 'GApi', 'GData', '$cookies','UserService','$state', '$rootScope', 'GroupService',
+  function(GAuth, GApi, GData, $cookies, UserService, $state, $rootScope, GroupService) {
 
-// baseApp.run(['GApi', 'GAuth',
-//  function(GApi, GAuth) {
-//    var BASE = 'https://myGoogleAppEngine.appspot.com/_ah/api';
-//    GApi.load('myApiName','v1',BASE).then(function(resp) {
-//      console.log('api: ' + resp.api + ', version: ' + resp.version + ' loaded');
-//    }, function(resp) {
-//      console.log('an error occured during loading api: ' + resp.api + ', resp.version: ' + version);
-//    });
-//  }
-// ]);
+    //$rootScope.gdata = GData;
 
-app.run(['GAuth', 'GApi', 'GData', '$rootScope', '$cookies','UserService','$state',
-  function(GAuth, GApi, GData, $rootScope, $cookies, UserService, $state) {
-
-    $rootScope.gdata = GData;
-    $rootScope.username=$cookies.get('userId');
-    $rootScope.localUsername = $cookies.get('localUserId');
 
      var CLIENT = '339048773288-d1uc4190g7stc84rcm22l4bhg9hch1je.apps.googleusercontent.com';
      GApi.load('blogger', 'v3');
@@ -116,33 +103,60 @@ app.run(['GAuth', 'GApi', 'GData', '$rootScope', '$cookies','UserService','$stat
      GAuth.setScope('https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/blogger');
 
      function checkAuthFirst(){
-       UserService.isLogin().then(
+        UserService.isLogin().then(
            function(){
-             console.log("ALLOW");
-             //console.log($rootScope.gdata.getUser());
-             //window.location.href='#/main_dashboard';
+                console.log("ALLOW");
+               GroupService.getGroupList().then(function(groupListObject){
+                       $rootScope.groupMembers = groupListObject.groupMembers;
+                       $rootScope.groupWithGmail = [];
+                       $rootScope.currentGroup =  groupListObject.currentGroup;
+                       $rootScope.groups = groupListObject.groups;
+                       //console.log("groups:",$rootScope.groups);
+                       //for(var i = $rootScope.groupMembers.length - 1; i >= 0; i--) {
+                       //
+                       //    GroupService.getGmails($rootScope.groupMembers[i]).then(
+                       //        function(response){
+                       //            console.log(response.data);
+                       //            $rootScope.groupWithGmail.push(response.data);
+                       //        }
+                       //    );
+                       //
+                       //}
+
+
+                   }
+
+               );
+                //window.location.href='#/main_dashboard';
            },
            function(){
-             console.log('DENY : Redirecting to Login');
-             window.location.href='#/';
+                var state = $state.current;
+                //console.log($state.current);
+                if(state.name != 'login'&& state.name != 'signup' && state.name != 'homepage'){
+                    console.log('DENY : Redirecting to HomePage');
+                    $state.go('homepage');
+                }
            }
-       );
+        );
      }
 
-     checkAuthFirst();
 
-    //$rootScope.$on('$stateChangeStart', function (event, next,current) {
-    //   checkAuthFirst();
-    //});
+    $rootScope.$on('$stateChangeStart', function (event, next, current) {
+       checkAuthFirst();
+    });
 
     $rootScope.logout = function() {
-      //console.log("LocalUser: "+$cookies.get('localUserId'));
-      $state.go('homepage');
-      $cookies.remove('localUserId');
-      //console.log("LocalUser: "+$cookies.get('localUserId'));
-      GAuth.logout().then(function () {
-        $cookies.remove('userId');
-      });
+        console.log("LocalUser: "+$cookies.get('localUserId'));
+        var cookies = $cookies.getAll();
+        angular.forEach(cookies, function (v, k) {
+            $cookies.remove(k);
+        });
+
+        console.log("LocalUser: "+$cookies.get('localUserId'));
+        GAuth.logout().then(function () {
+          console.log("GAuth logged out")
+          $state.go('homepage');
+        });
     };
 
 
@@ -152,62 +166,42 @@ app.run(['GAuth', 'GApi', 'GData', '$rootScope', '$cookies','UserService','$stat
   }
 ]);
 
-app.controller('AppCtrl', [ '$scope', "$cookies", "UserService", "$rootScope", "$http", "GroupService",
-    function($scope, $cookies, UserService, $rootScope, $http, GroupService) {
-
+app.controller('AppCtrl', [ '$scope', "$cookies","GroupService","$state","$rootScope",
+    function($scope, $cookies, GroupService, $state, $rootScope) {
         //List groups
-        function getGroup(){
-            GroupService.getGroup().then(
-                function success(user_list){
-                    $scope.groups=user_list.data;
-                    $cookies.put("groups", $scope.groups);
-                },
-                function error(){
-                    console.log('Failed to get groups');
-                }
-            );
-        }
-        getGroup();
-        $scope.switchGroup = function(){
-            getGroup();
-        };
+        $rootScope.username=$cookies.get('userId');
+        $rootScope.localUsername = $cookies.get('localUserId');
 
-        $scope.getGroupMembers=function(groupname){
-            var groupWithGmail={};
-            GroupService.getMembers(groupname).then(
-                function(response){
-                    var groupMembers = response.data;
-                    for(var i = groupMembers.length - 1; i >= 0; i--) {
-                        if(groupMembers[i] == $rootScope.localUsername) {
-                            continue;
-                        }
-                        else{
-                            GroupService.getGmails(groupMembers[i]).then(
-                                function(response){
-                                    //console.log(response);
-                                    groupWithGmail[groupMembers[i]]=response.data;
-                                }
-                            );
-                        }
-                    }
-                    $cookies.put('group', groupMembers);
-                    $cookies.put('groupWithGmail', groupWithGmail);
-                    console.log($cookies.get('group'));
-                    console.log($cookies.get('groupWithGmail'));
-
+        $scope.getMembers=function(currentGroup){
+            GroupService.getGroupMembers(currentGroup).then(
+                function(groupMemberObject){
+                    $rootScope.groupMembers = groupMemberObject.groupMembers;
+                    $rootScope.groupWithGmail=[];
+                    $rootScope.currentGroup=groupMemberObject.currentGroup;
+                    //for(var i = $rootScope.groupMembers.length - 1; i >= 0; i--) {
+                    //
+                    //    GroupService.getGmails($rootScope.groupMembers[i]).then(
+                    //        function(response){
+                    //            console.log(response.data);
+                    //            $rootScope.groupWithGmail.push(response.data);
+                    //        }
+                    //    );
+                    //
+                    //}
+                    //console.log(groupMemberObject);
+                    //console.log($rootScope.groupMembers);
+                    //console.log(groupMemberObject.groupWithGmail);
                 },
                 function(){
-                    console.log("Failed to get group members");
+                    console.log("Failed");
                 }
             );
         }
-
-
     }]);
 
-app.factory('GroupService', ["$http", "$q", "GAuth","$cookies", function($http, $q, GAuth, $cookies) {
+app.factory('GroupService', ["$http", "$q", "$cookies",  "$state", function($http, $q, $cookies,  $state) {
     var factory = {};
-    factory.getGroup = function() {
+    function getGroup() {
         var deferred = $q.defer();
         $http({
             method: 'GET',
@@ -222,7 +216,7 @@ app.factory('GroupService', ["$http", "$q", "GAuth","$cookies", function($http, 
         return deferred.promise;
     };
 
-    factory.getMembers = function(groupname){
+    function getMembers(groupname){
         var deferred = $q.defer();
         $http({
             method: 'GET',
@@ -237,7 +231,7 @@ app.factory('GroupService', ["$http", "$q", "GAuth","$cookies", function($http, 
         return deferred.promise;
     }
 
-    factory.getGmails = function(localUsername){
+    factory.getGmails=function(localUsername){
         var deferred = $q.defer();
         $http({
             method: 'GET',
@@ -249,6 +243,62 @@ app.factory('GroupService', ["$http", "$q", "GAuth","$cookies", function($http, 
             //console.log(response);
             deferred.reject(response);
         });
+        return deferred.promise;
+    }
+    factory.getGroupMembers=function(current_group){
+        var deferred = $q.defer();
+        var groupMemberObject={};
+        getMembers(current_group).then(
+            function(response){
+                groupMemberObject.currentGroup=current_group;
+                var groupMembers = response.data;
+
+                groupMemberObject.groupMembers = groupMembers;
+                //console.log(groupMemberObject);
+                deferred.resolve(groupMemberObject);
+
+            },
+            function(){
+                console.log("Failed to get group members");
+                deferred.reject();
+            }
+        );
+        return deferred.promise;
+    };
+
+    factory.getGroupList=function(){
+        var deferred = $q.defer();
+        var groupListObject = {};
+        getGroup().then(
+            function success(grouplist){
+                groupListObject.groups=grouplist.data;
+                if(groupListObject.groups.length===0){
+                    $state.go('group_management');
+                }
+                else{
+                    groupListObject.currentGroup = groupListObject.groups[0];
+                    //console.log("current group: ", groupListObject.currentGroup);
+                    getMembers(groupListObject.currentGroup).then(
+                        function(response){
+                            var groupMembers = response.data;
+                            groupListObject.groupMembers = groupMembers;
+                            deferred.resolve(groupListObject);
+
+
+                        },
+                        function(){
+                            console.log("Failed to get group members");
+                            deferred.reject();
+                        }
+                    );
+                }
+
+            },
+            function error(){
+                console.log('Failed to get groups');
+                deferred.reject();
+            }
+        );
         return deferred.promise;
     }
     return factory;

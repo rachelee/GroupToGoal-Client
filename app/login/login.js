@@ -3,7 +3,7 @@
  */
 var app = angular.module('myApp.login', ['ngRoute']);
 
-app.factory('UserService', ["$http", "$q", "GAuth","$cookies", "$rootScope",function($http, $q, GAuth, $cookies, $rootScope) {
+app.factory('UserService', ["$http", "$q", "GAuth","$cookies",function($http, $q, GAuth, $cookies) {
     var factory = {};
     var username = undefined;
     factory.localLogin = function(localUsername, localPassword) {
@@ -59,11 +59,16 @@ app.factory('UserService', ["$http", "$q", "GAuth","$cookies", "$rootScope",func
         );
         return deferred.promise;
     }
+
     return factory;
+
 }]);
 
-app.controller('LoginCtrl', ['$scope', 'GAuth', 'GApi', 'GData', '$cookies','UserService','$rootScope',
-    function ($scope, GAuth, GApi, GData, $cookies, UserService, $rootScope, $state) {
+
+
+
+app.controller('LoginCtrl', ['$scope', 'GAuth', 'GApi', 'GData', '$cookies','UserService','$rootScope', 'GroupService',
+    function ($scope, GAuth, GApi, GData, $cookies, UserService, $rootScope, $state, GroupService) {
         //UserService.isLogin().then(function(){
         //    window.location.href = '#/main_dashboard';
         //});
@@ -76,9 +81,35 @@ app.controller('LoginCtrl', ['$scope', 'GAuth', 'GApi', 'GData', '$cookies','Use
             window.location.href = '#/signup';
         };
 
+        //var getGroupInfo = function() {
+        //    GroupService.getGroupList().then(function(groupListObject){
+        //            $rootScope.groupMembers = groupListObject.groupMembers;
+        //            $rootScope.groupWithGmail = [];
+        //            $rootScope.currentGroup =  groupListObject.currentGroup;
+        //            $rootScope.groups = groupListObject.groups;
+        //            //console.log("groups:",$rootScope.groups);
+        //            //for(var i = $rootScope.groupMembers.length - 1; i >= 0; i--) {
+        //            //
+        //            //    GroupService.getGmails($rootScope.groupMembers[i]).then(
+        //            //        function(response){
+        //            //            console.log(response.data);
+        //            //            $rootScope.groupWithGmail.push(response.data);
+        //            //        }
+        //            //    );
+        //            //
+        //            //}
+        //
+        //
+        //        }
+        //
+        //    );
+        //};
+
+
         var ifLogin = function() {
             $cookies.put('userId', GData.getUser().name);
             window.location.href='#/main_dashboard';
+            //getGroupInfo();
         };
 
         $scope.doLogin = function() {

@@ -12,7 +12,7 @@ app.factory('BlogIdService', ["$q","$http", "GApi", function($q, $http, GApi) {
             blog_ids[username] = blogId;
             deferred.resolve(blogId);
         }, function(msg) {
-            //console.log(msg);
+            console.log(msg);
             deferred.reject("Failed to find blog id from google. Please make sure you entered the correct url!")
         });
         return deferred.promise;
@@ -68,26 +68,19 @@ app.factory('BlogIdService', ["$q","$http", "GApi", function($q, $http, GApi) {
 }]);
 
 
-app.factory('BlogPostsService', ["GApi", "$http", "$q", "BlogIdService", function(GApi, $http, $q, BlogIdService) {
+app.factory('BlogPostsService', ["GApi", "$http", "$q", "BlogIdService",  function(GApi, $http, $q, BlogIdService) {
     var factory = {};
-    factory.getPost = function(username) {
+    factory.getPost = function(blogId) {
         var deferred = $q.defer();
-        BlogIdService.getId(username).then(
-            function(blogId){
-                GApi.executeAuth('blogger', 'posts.list', {'blogId': blogId}).then(function (resp) {
-                    if(resp.items==undefined){
-                        deferred.reject("No post found!");
-                    }
-                    deferred.resolve(resp.items);
-                }, function (msg) {
-                    deferred.reject(msg);
-                });
-            },
-            function(msg){
-                //console.log(msg);
-                deferred.reject(msg);
+        GApi.executeAuth('blogger', 'posts.list', {'blogId': blogId}).then(function (resp) {
+            if(resp.items==undefined){
+                deferred.reject("No post found!");
             }
-        );
+            deferred.resolve(resp.items);
+        }, function (msg) {
+            deferred.reject(msg);
+        });
+
         return deferred.promise;
     }
 
@@ -121,9 +114,8 @@ app.controller('StudyNotesCtrl', ['$scope','GApi', '$http', '$rootScope','$q', '
     //    'others': [{'name': 'Yue Shen', 'blog_id': "3213900"}, {'name': 'Dan Su', 'blog_id': "5580000621368117250"}]
     //};
     //Get self posts
-        console.log($rootScope.username);
+    console.log($rootScope.localUsername);
     $scope.tab = 1;
-
     $scope.blog = {};
     $scope.blog.posts=[]; //current displayed post list, can be from a user's blog or search result
     $scope.search_result = {}; //result of last search
@@ -132,47 +124,43 @@ app.controller('StudyNotesCtrl', ['$scope','GApi', '$http', '$rootScope','$q', '
     $scope.newPost.author={};
     $scope.visible = false;
     $scope.setId = false;
+
     //initial posts
-    function initPost(){
-        $scope.blog.posts=BlogPostsService.getPost($rootScope.username).then(function (posts) {
-            console.log(posts);
-            $scope.blog.posts = posts;
-        }, function (message) {
-            if(message==="No id found!"){
-                $scope.setId=true;
-            }
-        });
+    function initPost(username){
+        BlogIdService.getId(username)
+            .then(
+                function(blogId){
+                    $scope.blog.id=blogId;
+                    return BlogPostsService.getPost(blogId);
+                }
+            )
+            .then(
+                function(response){
+                    $scope.blog.posts=response;
+                },
+                function(msg){
+                    console.log(msg);
+                });
     }
-    initPost();
+    initPost($rootScope.localUsername);
 
     $scope.getPosts = function(username){
-        if(username === $rootScope.username){
+        if(username === $rootScope.localUsername){
             $scope.tab=1;
         }
         else{
             $scope.tab=2;
         }
-        BlogPostsService.getPost(username).then(function(posts) {
-                $scope.post_error = undefined;
-                $scope.blog.posts = posts;
-            },
-            function (message){
-                $scope.blog.posts=[];
-                console.log(message);
-                $scope.post_error = "No post in "+username+"'s study notes."
-            }
-        );
+        initPost(username);
     }
 
-
-        //console.log(BlogPostsService.getPost("Xiaoxiao Li"));
     $scope.publish = function(){
         $scope.error = "";
         if($scope.visible==false)
             $scope.visible = !$scope.visible
         else{
             $scope.newPost.published=new Date();
-            $scope.newPost.author.displayname=$rootScope.username;//To Do: later add username here
+            $scope.newPost.author.displayname=$rootScope.localUsername;//To Do: later add username here
             //console.log(post);
             console.log($scope.newPost.title);
             console.log($scope.newPost.content);
@@ -261,7 +249,8 @@ app.controller('StudyNotesCtrl', ['$scope','GApi', '$http', '$rootScope','$q', '
     }
 
     $scope.save_id=function(){
-        BlogIdService.setId($scope.username, $scope.blog.url).then(
+        //console.log('localUsername: ', $rootScope.localUsername);
+        BlogIdService.setId($rootScope.localUsername, $scope.blog.url).then(
             function(){
                 initPost();
                 $scope.setId=false;

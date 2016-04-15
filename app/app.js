@@ -91,8 +91,8 @@ app.config(function($stateProvider, $urlRouterProvider) {
 
 
 
-app.run(['GAuth', 'GApi', 'GData', '$cookies','UserService','$state', '$rootScope', 'GroupService',
-  function(GAuth, GApi, GData, $cookies, UserService, $state, $rootScope, GroupService) {
+app.run(['GAuth', 'GApi', 'GData', '$cookies','UserService','$state', '$rootScope',
+  function(GAuth, GApi, GData, $cookies, UserService, $state, $rootScope) {
 
     //$rootScope.gdata = GData;
 
@@ -154,10 +154,10 @@ app.controller('AppCtrl', [ '$scope', "$cookies","GroupService","$state","$rootS
                     $rootScope.groups=response;
                     if($cookies.get('currentGroup')===undefined) {
                         $cookies.put('currentGroup', response[0]);
-                        return GroupService.getMembers(response[0]);
+                        return GroupService.getMembers(response[0], $rootScope.localUsername);
                     }
                     else{
-                        return GroupService.getMembers($cookies.get('currentGroup'));
+                        return GroupService.getMembers($cookies.get('currentGroup'), $rootScope.localUsername);
                     }
                 })
                 .then(
@@ -191,7 +191,7 @@ app.controller('AppCtrl', [ '$scope', "$cookies","GroupService","$state","$rootS
         getGroupInfo();
         $scope.switchGroup=function(name){
             $cookies.put('currentGroup', name);
-            GroupService.getMembers($cookies.get('currentGroup'))
+            GroupService.getMembers($cookies.get('currentGroup'), $rootScope.localUsername)
                 .then(function(groupMembers){
                     $rootScope.groupMembers=groupMembers;
                     return getGmailList(groupMembers);
@@ -238,13 +238,18 @@ app.factory('GroupService', ["$http", "$q", "$cookies",  "$state", function($htt
         return deferred.promise;
     };
 
-    factory.getMembers=function(groupname){
+    factory.getMembers=function(groupname, localUsername){
         var deferred = $q.defer();
         $http({
             method: 'GET',
             url: "http://localhost:8080/listUsers/"+groupname
         }).then(function successCallback(response) {
-            var groupMembers = response.data;
+            var groupMembers = [];
+            for(var i=0;i<response.data.length;i++){
+                if(response.data[i]!==localUsername){
+                    groupMembers.push(response.data[i]);
+                }
+            }
             deferred.resolve(groupMembers);
         }, function errorCallback(response) {
             //console.log(response);

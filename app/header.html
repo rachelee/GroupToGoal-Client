@@ -14,7 +14,7 @@
                 <li class="Switch Group">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Switch Group<span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li ng-repeat="group in groups"><a ng-click="getMembers(group)">{{group}}</a></li>
+                        <li ng-repeat="group in groups"><a ng-click="switchGroup(group)">{{group}}</a></li>
                     </ul>
                 </li>
                 <li><a ui-sref=="group_management">{{localUsername}}</a></li>

@@ -147,35 +147,38 @@ app.controller('AppCtrl', [ '$scope', "$cookies","GroupService","$state","$rootS
         $rootScope.username=$cookies.get('userId');
         $rootScope.localUsername = $cookies.get('localUserId');
         $rootScope.groupMemberGmails=[];
-        GroupService.getGroup()
-        .then(
-            function(response){
-                $rootScope.groups=response;
-                if($cookies.get('currentGroup')===undefined) {
-                    $cookies.put('currentGroup', response[0]);
-                    return GroupService.getMembers(response[0]);
+        function getGroupInfo(){
+            GroupService.getGroup()
+                .then(
+                function(response){
+                    $rootScope.groups=response;
+                    if($cookies.get('currentGroup')===undefined) {
+                        $cookies.put('currentGroup', response[0]);
+                        return GroupService.getMembers(response[0]);
+                    }
+                    else{
+                        return GroupService.getMembers($cookies.get('currentGroup'));
+                    }
+                })
+                .then(
+                function(groupMembers){
+                    $rootScope.groupMembers=groupMembers;
+                    return getGmailList(groupMembers);
                 }
-                else{
-                    return GroupService.getMembers($cookies.get('currentGroup'));
+            )
+                .then(
+                function(results){
+                    $rootScope.groupMemberGmails=[]
+                    for(var i=0;i<results.length;i++){
+                        $rootScope.groupMemberGmails.push(results[i].data);
+                    }
+                    console.log($rootScope.groups);
+                    console.log($rootScope.groupMembers);
+                    console.log($rootScope.groupMemberGmails);
+                    console.log($cookies.get('currentGroup'));
                 }
-        })
-        .then(
-            function(groupMembers){
-                $rootScope.groupMembers=groupMembers;
-                return getGmailList(groupMembers);
-            }
-        )
-        .then(
-            function(results){
-                for(var i=0;i<results.length;i++){
-                    $rootScope.groupMemberGmails.push(results[i].data);
-                }
-                console.log($rootScope.groups);
-                console.log($rootScope.groupMembers);
-                console.log($rootScope.groupMemberGmails);
-                console.log($cookies.get('currentGroup'));
-            }
-        );
+            );
+        }
 
         function getGmailList(groupMembers){
             var promiseList = [];
@@ -184,6 +187,26 @@ app.controller('AppCtrl', [ '$scope', "$cookies","GroupService","$state","$rootS
             }
             return $q.all(promiseList);
         }
+
+        getGroupInfo();
+        $scope.switchGroup=function(name){
+            $cookies.put('currentGroup', name);
+            GroupService.getMembers($cookies.get('currentGroup'))
+                .then(function(groupMembers){
+                    $rootScope.groupMembers=groupMembers;
+                    return getGmailList(groupMembers);
+                })
+                .then(function(results){
+                    $rootScope.groupMemberGmails=[];
+                    for(var i=0;i<results.length;i++){
+                        $rootScope.groupMemberGmails.push(results[i].data);
+                    }
+                    console.log($rootScope.groups);
+                    console.log($rootScope.groupMembers);
+                    console.log($rootScope.groupMemberGmails);
+                    console.log($cookies.get('currentGroup'));
+                });
+        };
 
     }]);
 

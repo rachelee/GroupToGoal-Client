@@ -16,6 +16,7 @@ var app = angular.module('myApp', [
   'myApp.homepage',
   'myApp.signup',
   'myApp.group_management',
+  'angularSpinner',
 ]);
 
 app.config(function($stateProvider, $urlRouterProvider) {
@@ -36,7 +37,22 @@ app.config(function($stateProvider, $urlRouterProvider) {
               'top' : { templateUrl: 'header.html' },
               'side': { templateUrl: 'side.html' },
               'content' : { templateUrl: 'main_dashboard/main_dashboard.html' }
-            }
+            },
+              resolve:{
+                  authenticate: function(UserService, $state, $q){
+                      var deferred = $q.defer();
+                      UserService.isLogin().then(
+                          function(){
+                              console.log("ALLOW");
+                              deferred.resolve();
+                          },
+                          function(){
+                              $state.go('homepage');
+                          }
+                      );
+                      return deferred.promise;
+                  },
+              }
           })
           .state('study_notes', {
             url: '/study_notes',
@@ -44,7 +60,22 @@ app.config(function($stateProvider, $urlRouterProvider) {
               'top' : { templateUrl: 'header.html' },
               'side': { templateUrl: 'side.html' },
               'content' : { templateUrl: 'study_notes/study_notes.html' }
-            }
+            },
+              resolve:{
+                  authenticate: function(UserService, $state, $q){
+                      var deferred = $q.defer();
+                      UserService.isLogin().then(
+                          function(){
+                              console.log("ALLOW");
+                              deferred.resolve();
+                          },
+                          function(){
+                              $state.go('homepage');
+                          }
+                      );
+                      return deferred.promise;
+                  }
+              }
           })
           .state('files', {
             url: '/files',
@@ -52,7 +83,22 @@ app.config(function($stateProvider, $urlRouterProvider) {
               'top' : { templateUrl: 'header.html' },
               'side': { templateUrl: 'side.html' },
               'content' : { templateUrl: 'files/files.html' }
-            }
+            },
+              resolve:{
+                  authenticate: function(UserService, $state, $q){
+                      var deferred = $q.defer();
+                      UserService.isLogin().then(
+                          function(){
+                              console.log("ALLOW");
+                              deferred.resolve();
+                          },
+                          function(){
+                              $state.go('homepage');
+                          }
+                      );
+                      return deferred.promise;
+                  }
+              }
           })
           .state('chat_room', {
             url: '/chat_room',
@@ -60,7 +106,22 @@ app.config(function($stateProvider, $urlRouterProvider) {
               'top' : { templateUrl: 'header.html' },
               'side': { templateUrl: 'side.html' },
               'content' : { templateUrl: 'chat_room/chat_room.html' }
-            }
+            },
+              resolve:{
+                  authenticate: function(UserService, $state, $q){
+                      var deferred = $q.defer();
+                      UserService.isLogin().then(
+                          function(){
+                              console.log("ALLOW");
+                              deferred.resolve();
+                          },
+                          function(){
+                              $state.go('homepage');
+                          }
+                      );
+                      return deferred.promise;
+                  }
+              }
           })
           .state('login', {
             url: '/login',
@@ -84,7 +145,22 @@ app.config(function($stateProvider, $urlRouterProvider) {
               'top' : { templateUrl: 'header.html' },
               'side': { templateUrl: 'side.html' },
               'content' : { templateUrl: 'group_management/group_management.html' }
-            }
+            },
+              resolve:{
+                  authenticate: function(UserService, $state, $q){
+                      var deferred = $q.defer();
+                      UserService.isLogin().then(
+                          function(){
+                              console.log("ALLOW");
+                              deferred.resolve();
+                          },
+                          function(){
+                              $state.go('homepage');
+                          }
+                      );
+                      return deferred.promise;
+                  }
+              }
           });
 
 })
@@ -101,27 +177,6 @@ app.run(['GAuth', 'GApi', 'GData', '$cookies','UserService','$state', '$rootScop
      GApi.load('blogger', 'v3');
      GAuth.setClient(CLIENT);
      GAuth.setScope('https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/blogger');
-
-     function checkAuthFirst(){
-        UserService.isLogin().then(
-           function(){
-                console.log("ALLOW");
-           },
-           function(){
-                var state = $state.current;
-                //console.log($state.current);
-                if(state.name != 'login'&& state.name != 'signup' && state.name != 'homepage'){
-                    console.log('DENY : Redirecting to HomePage');
-                    $state.go('homepage');
-                }
-           }
-        );
-     }
-
-
-    $rootScope.$on('$stateChangeStart', function (event, next, current) {
-       checkAuthFirst();
-    });
 
     $rootScope.logout = function() {
         console.log("LocalUser: "+$cookies.get('localUserId'));

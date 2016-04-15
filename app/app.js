@@ -106,28 +106,6 @@ app.run(['GAuth', 'GApi', 'GData', '$cookies','UserService','$state', '$rootScop
         UserService.isLogin().then(
            function(){
                 console.log("ALLOW");
-               GroupService.getGroupList().then(function(groupListObject){
-                       $rootScope.groupMembers = groupListObject.groupMembers;
-                       $rootScope.groupWithGmail = [];
-                       $rootScope.currentGroup =  groupListObject.currentGroup;
-                       $rootScope.groups = groupListObject.groups;
-                       //console.log("groups:",$rootScope.groups);
-                       //for(var i = $rootScope.groupMembers.length - 1; i >= 0; i--) {
-                       //
-                       //    GroupService.getGmails($rootScope.groupMembers[i]).then(
-                       //        function(response){
-                       //            console.log(response.data);
-                       //            $rootScope.groupWithGmail.push(response.data);
-                       //        }
-                       //    );
-                       //
-                       //}
-
-
-                   }
-
-               );
-                //window.location.href='#/main_dashboard';
            },
            function(){
                 var state = $state.current;
@@ -160,73 +138,94 @@ app.run(['GAuth', 'GApi', 'GData', '$cookies','UserService','$state', '$rootScop
     };
 
 
-    //$rootScope.username = gdata.getUser().name;
-    //$rootScope.group=["Yue Shen", "Dan Su", "Wei Si"];
-
   }
 ]);
 
-app.controller('AppCtrl', [ '$scope', "$cookies","GroupService","$state","$rootScope",
-    function($scope, $cookies, GroupService, $state, $rootScope) {
+app.controller('AppCtrl', [ '$scope', "$cookies","GroupService","$state","$rootScope", "$q",
+    function($scope, $cookies, GroupService, $state, $rootScope, $q) {
         //List groups
         $rootScope.username=$cookies.get('userId');
         $rootScope.localUsername = $cookies.get('localUserId');
-
-        $scope.getMembers=function(currentGroup){
-            GroupService.getGroupMembers(currentGroup).then(
-                function(groupMemberObject){
-                    $rootScope.groupMembers = groupMemberObject.groupMembers;
-                    $rootScope.groupWithGmail=[];
-                    $rootScope.currentGroup=groupMemberObject.currentGroup;
-                    //for(var i = $rootScope.groupMembers.length - 1; i >= 0; i--) {
-                    //
-                    //    GroupService.getGmails($rootScope.groupMembers[i]).then(
-                    //        function(response){
-                    //            console.log(response.data);
-                    //            $rootScope.groupWithGmail.push(response.data);
-                    //        }
-                    //    );
-                    //
-                    //}
-                    //console.log(groupMemberObject);
-                    //console.log($rootScope.groupMembers);
-                    //console.log(groupMemberObject.groupWithGmail);
-                },
-                function(){
-                    console.log("Failed");
+        $rootScope.groupMemberGmails=[];
+        GroupService.getGroup()
+        .then(
+            function(response){
+                $rootScope.groups=response;
+                if($cookies.get('currentGroup')===undefined) {
+                    $cookies.put('currentGroup', response[0]);
+                    return GroupService.getMembers(response[0]);
                 }
-            );
+                else{
+                    return GroupService.getMembers($cookies.get('currentGroup'));
+                }
+        })
+        .then(
+            function(groupMembers){
+                $rootScope.groupMembers=groupMembers;
+                return getGmailList(groupMembers);
+            }
+        )
+        .then(
+            function(results){
+                for(var i=0;i<results.length;i++){
+                    $rootScope.groupMemberGmails.push(results[i].data);
+                }
+                console.log($rootScope.groups);
+                console.log($rootScope.groupMembers);
+                console.log($rootScope.groupMemberGmails);
+                console.log($cookies.get('currentGroup'));
+            }
+        );
+
+        function getGmailList(groupMembers){
+            var promiseList = [];
+            for(var i=0;i<groupMembers.length;i++){
+                promiseList.push(GroupService.getGmails(groupMembers[i]));
+            }
+            return $q.all(promiseList);
         }
+
     }]);
 
 app.factory('GroupService', ["$http", "$q", "$cookies",  "$state", function($http, $q, $cookies,  $state) {
     var factory = {};
-    function getGroup() {
+    factory.getGroup=function() {
         var deferred = $q.defer();
-        $http({
-            method: 'GET',
-            url: "http://localhost:8080/listGroups/"+$cookies.get("localUserId")
-        }).then(function successCallback(response) {
-            //console.log(response);
-            deferred.resolve(response);
-        }, function errorCallback(response) {
-            //console.log(response);
-            deferred.reject(response);
-        });
+        if($cookies.get('localUserId')==null){
+            deferred.reject("User is not logged in");
+        }
+        else{
+            $http({
+                method: 'GET',
+                url: "http://localhost:8080/listGroups/"+$cookies.get("localUserId")
+            }).then(function successCallback(response) {
+                if(response.data.length===0){
+                    $state.go('group_management');
+                    deferred.reject('User is not in any group');
+                }
+                else{
+                    //$cookies.put('groups', response.data);
+                    deferred.resolve(response.data);
+                }
+            }, function errorCallback(response) {;
+                deferred.reject(response);
+            });
+        }
+
         return deferred.promise;
     };
 
-    function getMembers(groupname){
+    factory.getMembers=function(groupname){
         var deferred = $q.defer();
         $http({
             method: 'GET',
             url: "http://localhost:8080/listUsers/"+groupname
         }).then(function successCallback(response) {
-            //console.log(response);
-            deferred.resolve(response);
+            var groupMembers = response.data;
+            deferred.resolve(groupMembers);
         }, function errorCallback(response) {
             //console.log(response);
-            deferred.reject(response);
+            deferred.reject("Failed to get group members");
         });
         return deferred.promise;
     }
@@ -237,69 +236,12 @@ app.factory('GroupService', ["$http", "$q", "$cookies",  "$state", function($htt
             method: 'GET',
             url: "http://localhost:8080/getGmail/"+localUsername
         }).then(function successCallback(response) {
-            //console.log(response);
             deferred.resolve(response);
-        }, function errorCallback(response) {
-            //console.log(response);
-            deferred.reject(response);
+        }, function errorCallback() {
+            deferred.reject('Failed to get groups');
         });
         return deferred.promise;
     }
-    factory.getGroupMembers=function(current_group){
-        var deferred = $q.defer();
-        var groupMemberObject={};
-        getMembers(current_group).then(
-            function(response){
-                groupMemberObject.currentGroup=current_group;
-                var groupMembers = response.data;
 
-                groupMemberObject.groupMembers = groupMembers;
-                //console.log(groupMemberObject);
-                deferred.resolve(groupMemberObject);
-
-            },
-            function(){
-                console.log("Failed to get group members");
-                deferred.reject();
-            }
-        );
-        return deferred.promise;
-    };
-
-    factory.getGroupList=function(){
-        var deferred = $q.defer();
-        var groupListObject = {};
-        getGroup().then(
-            function success(grouplist){
-                groupListObject.groups=grouplist.data;
-                if(groupListObject.groups.length===0){
-                    $state.go('group_management');
-                }
-                else{
-                    groupListObject.currentGroup = groupListObject.groups[0];
-                    //console.log("current group: ", groupListObject.currentGroup);
-                    getMembers(groupListObject.currentGroup).then(
-                        function(response){
-                            var groupMembers = response.data;
-                            groupListObject.groupMembers = groupMembers;
-                            deferred.resolve(groupListObject);
-
-
-                        },
-                        function(){
-                            console.log("Failed to get group members");
-                            deferred.reject();
-                        }
-                    );
-                }
-
-            },
-            function error(){
-                console.log('Failed to get groups');
-                deferred.reject();
-            }
-        );
-        return deferred.promise;
-    }
     return factory;
 }]);

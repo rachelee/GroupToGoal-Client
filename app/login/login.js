@@ -81,35 +81,11 @@ app.controller('LoginCtrl', ['$scope', 'GAuth', 'GApi', 'GData', '$cookies','Use
             window.location.href = '#/signup';
         };
 
-        //var getGroupInfo = function() {
-        //    GroupService.getGroupList().then(function(groupListObject){
-        //            $rootScope.groupMembers = groupListObject.groupMembers;
-        //            $rootScope.groupWithGmail = [];
-        //            $rootScope.currentGroup =  groupListObject.currentGroup;
-        //            $rootScope.groups = groupListObject.groups;
-        //            //console.log("groups:",$rootScope.groups);
-        //            //for(var i = $rootScope.groupMembers.length - 1; i >= 0; i--) {
-        //            //
-        //            //    GroupService.getGmails($rootScope.groupMembers[i]).then(
-        //            //        function(response){
-        //            //            console.log(response.data);
-        //            //            $rootScope.groupWithGmail.push(response.data);
-        //            //        }
-        //            //    );
-        //            //
-        //            //}
-        //
-        //
-        //        }
-        //
-        //    );
-        //};
 
 
         var ifLogin = function() {
             $cookies.put('userId', GData.getUser().name);
             window.location.href='#/main_dashboard';
-            //getGroupInfo();
         };
 
         $scope.doLogin = function() {

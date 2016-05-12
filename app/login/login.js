@@ -6,6 +6,9 @@ var app = angular.module('myApp.login', ['ngRoute']);
 app.factory('UserService', ["$http", "$q", "GAuth","$cookies",function($http, $q, GAuth, $cookies) {
     var factory = {};
     var username = undefined;
+    var password=undefined;
+   // var globeUsername=undefined;
+
     factory.localLogin = function(localUsername, localPassword) {
         //console.log(localUsername);
         //console.log(localPassword);
@@ -19,7 +22,13 @@ app.factory('UserService', ["$http", "$q", "GAuth","$cookies",function($http, $q
             if(response.data.message=="Sign in successfully!") {
                 console.log(response.data.message);
                 username=localUsername;
+                password=localPassword;
                 $cookies.put('localUserId', username);
+                $cookies.put('localPassword',password);
+
+
+
+
                 deferred.resolve(response);
 
             }
@@ -57,8 +66,10 @@ app.factory('UserService', ["$http", "$q", "GAuth","$cookies",function($http, $q
                 deferred.reject("Google not logged in.");
             }
         );
+
         return deferred.promise;
     }
+
 
     return factory;
 
@@ -97,13 +108,13 @@ app.controller('LoginCtrl', ['$scope', 'GAuth', 'GApi', 'GData', '$cookies','Use
                         },
                         function() {
                             GAuth.login().then(function(){
-                                ifLogin();
-                            },
-                            function(resp){
-                                console.log(resp);
-                                $scope.error=res;
-                                window.location.href='#/';
-                            });
+                                    ifLogin();
+                                },
+                                function(resp){
+                                    console.log(resp);
+                                    $scope.error=res;
+                                    window.location.href='#/';
+                                });
                         }
                     );
                 },

@@ -46,6 +46,7 @@ app.factory('BlogIdService', ["$q","$http", "GApi", function($q, $http, GApi) {
         var deferred = $q.defer();
         getIdWithUrl(username, url).then(
             function(blogId){
+                console.log("Id set!")
                 $http({
                     method: 'POST',
                     url: 'http://localhost:3000/blog_id',
@@ -53,10 +54,12 @@ app.factory('BlogIdService', ["$q","$http", "GApi", function($q, $http, GApi) {
                 }).then(function (msg) {
                     deferred.resolve(msg);
                 }, function (response) {
+                    console.log(response)
                     deferred.reject("Failed to save blog id, please try again!");
                 });
             },
             function(msg){
+                console.log(msg);
                 deferred.reject(msg);
             }
         );
@@ -127,11 +130,19 @@ app.controller('StudyNotesCtrl', ['$scope','GApi', '$http', '$rootScope','$q', '
 
     //initial posts
     function initPost(username){
+        $scope.post_error = undefined;
         BlogIdService.getId(username)
             .then(
                 function(blogId){
                     $scope.blog.id=blogId;
                     return BlogPostsService.getPost(blogId);
+                },
+                function(){
+                    if($scope.tab===1){
+                        $scope.setId=true;
+                    }
+                    if($scope.tab===2)
+                        $scope.post_error="User has not set up study notes yet!"
                 }
             )
             .then(
@@ -176,8 +187,10 @@ app.controller('StudyNotesCtrl', ['$scope','GApi', '$http', '$rootScope','$q', '
                     'blogId': $scope.blog.id,
                     'resource': $scope.newPost
                 }).then(function (resp) {
-                    $scope.newPost = resp;
-                    $scope.blog.posts.unshift($scope.newPost);
+                    var post = resp;
+                    $scope.blog.posts.unshift(post);
+                    $scope.newPost.title=undefined;
+                    $scope.newPost.content=undefined;
                     $scope.visible = !$scope.visible
                     console.log($scope.newPost);
                 }, function () {
@@ -212,18 +225,14 @@ app.controller('StudyNotesCtrl', ['$scope','GApi', '$http', '$rootScope','$q', '
     function executeSearch(){
         $scope.search_result.posts = [];
         var username_list = [];
-        username_list.push($rootScope.username);
-        for(var i in $rootScope.group){
-            username_list.push($rootScope.group[i]);
+        username_list.push($rootScope.localUsername);
+        console.log($rootScope.groupMembers);
+        for(var i in $rootScope.groupMembers){
+            username_list.push($rootScope.groupMembers[i]);
+
         }
 
         for(var i in username_list) {
-            //GApi.executeAuth('blogger', 'posts.search', {'blogId': blog_id_list[i], 'q': $scope.search_result.keyword}).then(function (resp) {
-            //    $scope.value = resp;
-            //    $scope.search_result.posts.push.apply($scope.search_result.posts,$scope.value.items);
-            //}, function () {
-            //    console.log("error get post list failed");
-            //});
             BlogPostsService.searchPost(username_list[i], $scope.search_result.keyword, $scope.search_result.posts)
         }
         return $q(function(resolve, reject){
@@ -252,9 +261,10 @@ app.controller('StudyNotesCtrl', ['$scope','GApi', '$http', '$rootScope','$q', '
         //console.log('localUsername: ', $rootScope.localUsername);
         BlogIdService.setId($rootScope.localUsername, $scope.blog.url).then(
             function(){
-                initPost();
+                console.log("success!");
                 $scope.setId=false;
                 $scope.set_id_error = undefined;
+                initPost($rootScope.localUsername);
             },
             function(msg){
                 console.log(msg);

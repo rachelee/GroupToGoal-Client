@@ -1,8 +1,19 @@
+<link href="static/css/files.css" rel="stylesheet" />
 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" ng-controller="FilesCtrl">
-<br/>
-<h1>Hello, This is our file folder</h1>
-<hr/>
-<ul>
 
-</ul>
-    </div>
+	<div id="content">
+		<h3>Want to create a group folder?</h3>
+		<input ng-model="folder_name" id="folder_name" type="text" autofocus placeholder="Enter the group folder name here">
+		<button type="button" class="btn btn-default" ng-click="createFolder()">Create</button>
+
+		<h3>Want to start working on your files?</h3>
+
+
+			<div>
+			<a href='http://port-80-r2hm5nal76.treehouse-app.com' target='_blank'>Open Your Drive</a>
+			</div>
+			<img src="static/image/wallpaper_butterfly.jpeg">
+	</div>
+
+
+</div>

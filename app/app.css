@@ -68,6 +68,10 @@ body {
   background-color: #428bca;
 }
 
+a{
+  color: #000044;
+}
+
 
 /*
  * Main content
@@ -188,4 +192,29 @@ body {
   margin-bottom: 10px;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
+}
+
+.myButton
+{
+    margin-top: 30px;
+}
+
+.btn{
+    background-color: #000044;
+    color: #fff;
+}
+hr {
+   display: block;
+   position: relative;
+   padding: 0;
+   margin: 8px auto;
+   height: 0;
+   width: 100%;
+   max-height: 0;
+   font-size: 1px;
+   line-height: 0;
+   clear: both;
+   border: none;
+   border-top: 1px solid #aaaaaa;
+   border-bottom: 1px solid #ffffff;
 }

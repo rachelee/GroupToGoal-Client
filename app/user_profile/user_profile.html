@@ -1,0 +1,91 @@
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" ng-controller="ProfileCtrl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+
+	<link href="static/css/tri.css" rel="stylesheet" />
+
+</head>
+
+<body>
+
+
+        <!--  page-wrapper -->
+        <div id="bigWrapper">
+            <!-- Page Header -->
+            <div class="myheader">
+
+                    <h1 class="myPageHeader">User Profile</h1>
+
+            </div>
+            <!--End Page Header -->
+           <form class="formShape" >
+           <div class="formHeader">
+               <div class="headerColor">
+               Personal Information
+                </div>
+           </div>
+               <div class="formBody" >
+                   <br>
+                   <div class="infoPadding">
+
+                           <strong class="primary-font"> Name: {{ username }} </strong>
+                       <br>
+
+                           <strong class="primary-font"> Gmail: {{ gmail }} </strong>
+                       <br>
+
+                           <strong class="primary-font"> Personal Interests:
+                               <strong ng-repeat="interest in interests"> {{ interest }} </strong>
+                           </strong>
+                       <br>
+                   </div>
+                   <br>
+               </div>
+           </form>
+<br>
+            <form class="formShape" >
+                <div class="formHeader">
+                    <div class="headerColor">
+                    Profile Update
+                        </div>
+                </div>
+
+                <div class="formBody">
+                    <div class="infoPadding">
+
+                    <label class="labelPosition">New Password</label>
+                        <input type="text" class="inputPosition" placeholder="Enter Password" ng-model="password">
+                    <br>
+
+                       <label class="labelPosition">Repeat</label>
+                            <input type="text" class="inputPosition" placeholder="Repeat Password" ng-model="passwordcopy">
+
+                    <br>
+
+
+                        <label class="labelPosition">My Interests</label>
+                            <input type="text" class="inputPosition" placeholder="Enter Interests" ng-model="interests">
+
+
+                    <br>
+
+                        <div class="controls">
+                            <button type="update" class="btn myButton" ng-click="updateProfile()">
+                                Update
+                            </button>
+                            <br>
+                        </div>
+                    </div>
+                    </div>
+
+
+                </form>
+
+
+        <!-- end page-wrapper -->
+            </div>
+        <!-- <img src="static/image/homepage.jpg"> -->
+</body>
+</div>

@@ -26,34 +26,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Form</title>
 <!--         <link rel="stylesheet" href="css/normalize.css"> -->
-    <link href='http://fonts.googleapis.com/css?family=Nunito:400,300' rel='stylesheet' type='text/css'>
-    <link rel = "stylesheet" type = "text/css" href = "static/css/signup.css">
-<!--         <link rel="stylesheet" href="css/main.css"> -->
+<!-- Reset user agent -->
+    <link href="static/css/normalize.css" rel="stylesheet">
+    <!-- Bootstrap Core CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" type="text/css>"
+    <link href="http://fonts.googleapis.com/css?family=Nunito:400,300" rel="stylesheet" type="text/css">
+    <link rel = "stylesheet" type = "text/css" href = "static/css/signup1.css">
+
 </head>
 <body>
 
     <div ng-controller="LoginCtrl">
-        <button class="button button1">Group To Goal</button>
-        <button class="button button2" ng-click="toLogin()">Login</button>
-        <button class="button button3" ng-click="toSignup()">Sign up</button>
+        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" id='navigation'>
+            <div class="container">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">Group To Goal</a>
+                </div>
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <button class="button button2 btn btn-success" ng-click="toLogin()">Login</button>
+                    </li>
+                    <li>
+                        <button class="button button2 btn btn-success" ng-click="toSignup()">Sign up</button>
+                    </li>
+                </ul>
+            </div>   
+        </nav>
 
-    <form>
-  
-    <h1>Login</h1>
-    
-    <fieldset>
-
-        <label for="name">Name:</label>
-        <input ng-model="localUsername" type="text" id="name" name="user_name" required autofocus>
-          
-        <label for="password">Password:</label>
-        <input ng-model="localPassword" type="password" id="password" name="user_password" required>
-
-    </fieldset>
+        <div id='login_content'>
+            <form>
+                <h1>Login</h1>  
+                <label for="name">Name:</label>
+                <input ng-model="localUsername" type="text" id="name" name="user_name" required autofocus>
+                  
+                <label for="password">Password:</label>
+                <input ng-model="localPassword" type="password" id="password" name="user_password" required>
+                
+                <button class="button button4" ng-click="doLogin()">Login</button>
+            </form>
+        </div>
+        <footer>
+            <div class="row">
+                <div class="col-lg-12">
+                    <p>Copyright &copy; GroupToGoal</p>
+                </div>
+            </div>
         
-        <button class="button button4" ng-click="doLogin()">Login</button>
-    </form>
-
+        </footer>
     </div>
-      
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>  
 </body>

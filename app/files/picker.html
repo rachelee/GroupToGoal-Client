@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <title>Google Picker</title>
+
+    <script type="text/javascript">
+
+    
+    var developerKey = 'AIzaSyCJYQP-csp86STMc70_G_2Wuz18GhAOntM';
+
+    var clientId = '339048773288-d1uc4190g7stc84rcm22l4bhg9hch1je.apps.googleusercontent.com';
+
+    var appId = "339048773288";
+
+    var scope = ['https://www.googleapis.com/auth/drive'];
+
+    var pickerApiLoaded = false;
+    var oauthToken;
+
+
+    
+    /* Loading the Auth and Picker APIs */
+    // onAuthApiLoad gets called when the Auth API is done loading
+    function onApiLoad() {
+      gapi.load('auth', {'callback': onAuthApiLoad});
+      //gapi.load('picker');
+    }
+
+    /* Authenticating the user */
+    // scope asks Google for access to user's drive
+    // handleAuthResult gets called after the user
+    function onAuthApiLoad() {
+      window.gapi.auth.authorize(
+          {
+            'client_id': clientId,
+            'scope': scope,
+            'immediate': false
+          },
+          handleAuthResult);
+    }
+
+    // Save the oauthToken
+    function handleAuthResult(authResult) {
+      if (authResult && !authResult.error) {
+        oauthToken = authResult.access_token;
+        //createPicker();
+        if(oauthToken){
+            gapi.load('picker', {'callback': onPickerApiLoad});
+        }
+        else{
+            onApiLoad();
+        }
+      }
+    }
+
+
+    function onPickerApiLoad(){
+        pickerApiLoaded = true;
+        createPicker();
+    }
+
+    /* Create the Picker */
+    // PcikerBuilder builds a new Picker object
+    // Views are pages that can be added to the Picker to enable new functionality, such as file uploading. Without views the modal would be empty. Views get renders in the navigation bar.
+    // Set the OAuth token
+    // Select multiple files is allowed
+    // setCallback is to designate callback function so that the app knows which file is selected and what to do with it when a file is selected
+    // setVisible renders the Picker modal 
+    function createPicker() {
+        var picker = new google.picker.PickerBuilder()
+            .addView(new google.picker.DocsUploadView().setIncludeFolders(true))
+            .addView(google.picker.ViewId.FOLDERS)
+            .addView(new google.picker.DocsView())
+            .addView(google.picker.ViewId.RECENTLY_PICKED)
+            .setOAuthToken(oauthToken)
+            .setDeveloperKey(developerKey)
+            .enableFeature(google.picker.Feature.MULTISELECT_ENABLED)
+            .setCallback(pickerCallback)
+            .build();
+         picker.setVisible(true);
+    }
+
+
+    /* Implement the callback function when an action is triggered (e.g. select a file or cancel the selection) */
+    // First to check if the action is PICKED, which is triggered when the user picks or uploads a file (or the action is CANCEL, which is triggered when the user clicks "cancel" button)
+    // the 1st selected/uploaded file: data.docs[0]
+    // Its url and id are data.docs[0].url; and data.docs[0].id;
+    // docs is an array as multiple files can be selected in the picker.
+    function pickerCallback(data){
+        if(data.action == google.picker.Action.PICKED){
+            window.open(data.docs[0].url);
+          //alert('URL: ' + data.docs[0].url);
+        }
+    }
+   
+
+    </script>
+  </head>
+  <body>
+   <!--input type="button" value="Open a Picker" onClick="uploadFile()"-->
+    
+
+    <!-- The Google API Loader script. -->
+    <script type="text/javascript" src="https://apis.google.com/js/api.js?onload=onApiLoad"></script>
+    <script src="https://APIs.google.com/js/client.js"></script>
+  </body>
+</html>

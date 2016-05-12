@@ -1,8 +1,134 @@
 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" ng-controller="MainCtrl">
-<br/>
-<h1>Hello, This is our main page</h1>
-<hr/>
-<ul>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <link href="static/css/tri.css" rel="stylesheet" />
+
+</head>
+
+<body>
+
+
+        <!--  page-wrapper -->
+        <div id="bigWrapper">
+
+
+                <!-- Page Header -->
+            <div class="myheader">
+
+                    <h1 class="myPageHeader">Group Profile</h1>
+
+            </div>
+            <!--End Page Header -->
+            <!-- form start-->
+
+            <form  id="formA">
+                <div class="formHeader">
+                    <div class="headerColor">
+                    Group Information
+                        </div>
+                </div>
+                <div class="formBody" >
+                    <br>
+                    <div class="infoPadding">
+                         <ul class="groupmanagement">
+                              <li>
+                              <div>
+                              <strong class="primary-font"> Group Name: {{ groupname }} </strong>
+                             </div>
+                              </li>
+    <li>
+        <div>
+            <strong class="primary-font"> Group Owner: {{ groupowner }} </strong>
+        </div>
+    </li>
+    <li>
+        <div>
+            <strong class="primary-font"> Group Members:
+                <strong ng-repeat="member in groupMembers"> {{ member }} </strong>
+            </strong>
+        </div>
+    </li>
+    <li>
+        <div>
+            <strong class="primary-font"> Group Tags:
+                <strong ng-repeat="tag in grouptags"> {{ tag }} </strong>
+            </strong>
+        </div>
+    </li>
 </ul>
+</div>
+                    </div>
+            </form>
+
+<br>
+            <!-- <div class="down"> -->
+                <!-- <div class="mycenter"> -->
+            <!-- form start-->
+            <form>
+                <div class="formHeader">
+                    <div class="headerColor">
+                    Groups We Recommend for You
+                        </div>
+                </div>
+
+
+                <div class="formBody">
+                    <ul class="groupmanagement">
+                        <li ng-repeat="group in groupsRecommend">
+                            <div>
+                                <strong class="primary-font">{{ group }}</strong>
+                                [ <span ng-click="joinGroup(group)"> Join </span> ]
+                            </div>
+                        </li>
+
+                    </ul>
+                </div>
+
+            </form>
+
+<br>
+            <!-- form start-->
+            <form>
+                <div class="formHeader">
+                    <div class="headerColor">
+                    Search Similar Group
+                        </div>
+                </div>
+
+
+
+                <div class="formBody">
+                    <div >
+                        <input type="text" class="form-control" placeholder="Enter Keyword" ng-model="keyword">
+                    </div>
+                    <div>
+                        <button type="update" class="btn myButton" ng-click="searchGroups(keyword)">
+                            Search
+                        </button>
+
+                     </div>
+                    <div>
+
+                            <ul class="chat">
+                                <li ng-repeat="group in groupsSearch">
+                                    <div>
+                                        <strong class="primary-font">{{ group }}</strong>
+                                        [ <span ng-click="joinGroup(group)"> Join </span> ]
+                                    </div>
+                                </li>
+                            </ul>
+
+                    </div>
+                    </div>
+
+            </form>
+        </div>
+            </div>
+        </div>
+<!-- <img src="static/image/homepage.jpg"> -->
+        <!-- end page-wrapper -->
+</body>
+
 </div>

@@ -1,0 +1,44 @@
+.main {
+	margin-top: 30px;
+	position: relative;
+}
+
+.main img {
+            position: absolute;
+            width: 100%;
+            height: auto;
+            left: 0;
+            top: 0;
+            opacity: 0.3;
+            z-index: -1;
+}
+
+#folder_name {
+	width: 250px;
+	padding-left: 6px;
+	margin: 15px 20px 20px 0;
+}
+
+#content a {
+	color: #555555;
+	font-size: 1em;
+	border: 1px solid #cccccc;
+	background: #ffffff;
+	padding: 8px 8px;
+	border-radius: 5px;
+}
+#content a:hover{
+	text-decoration: none;
+
+}
+
+#content {
+	margin: 10% 0 0 52%;
+}
+#content input{
+	height: 35px;
+	border-radius: 3px;
+}
+#content div {
+	margin-top: 27px;
+}

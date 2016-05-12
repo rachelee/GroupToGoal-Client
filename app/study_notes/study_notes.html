@@ -13,7 +13,7 @@
         <li ng-repeat="user in groupMembers" ng-click="getPosts(user)"><a href>{{user}}</a></li>
       </ul>
     </li>
-    <li role="presentation" ng-class="{active:tab===3}"><a href ng-click="searchTab()">Search</a></li>
+    <li role="presentation" ng-class="{active:tab===3}" style=""><a href ng-click="searchTab()">Search</a></li>
   </ul>
 </section>
 
@@ -25,7 +25,7 @@
     </textarea>
       <p ng-bind="error"></p>
     </form>
-    <button id="publish_button" ng-show="tab===1&&setId===false" class="btn btn-primary" ng-click="publish()">Publish</button>
+    <button id="publish_button" ng-show="tab===1&&setId===false" class="btn myButton" ng-click="publish()">Publish</button>
     <div class="input-group" ng-show="tab===3" id="search_bar">
       <input type="text" ng-model="search_result.keyword" class="form-control" placeholder="Enter Keyword Here...">
       <span class="input-group-btn">
@@ -33,8 +33,8 @@
       </span>
     </div>
   </div>
-  <div id="set_up_id" class="well" ng-show="setId===true">
-    <p>Your study note has not been setup yet. Please set up according to tutorial</p>
+  <div id="set_up_id" class="well" ng-show="setId===true&&tab===1">
+    <p>Your study note has not been setup yet. Please set up!</p>
     <div class="input-group">
       <input type="text" ng-model="blog.url" class="form-control" placeholder="Enter Url Here...">
       <span class="input-group-btn">
@@ -46,9 +46,11 @@
   <div ng-repeat="post in blog.posts">
     <h3 ng-bind-html="post.title"></h3>
     <span ng-bind-html="post.author.displayname"></span>
-    <span ng-bind-html="post.published"></span>
+    <span >{{post.published|date:'MM/dd/yyyy @ h:mma'}}</span>
     <p ng-bind-html="post.content"></p>
+    <hr>
   </div>
   <p class="error">{{post_error}}</p>
 </div>
+
   </div>

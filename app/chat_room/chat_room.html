@@ -1,8 +1,116 @@
-<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" ng-controller="ChatRoomCtrl">
-<br/>
-<h1>Hello, This is our chat room</h1>
-<hr/>
-<ul>
 
-</ul>
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" ng-controller="ChatRoomCtrl">
+<head>
+    <script>
+
+        $(document).ready(function(){
+            $('p').hide();
+            $('button').click(function(){
+                console.log("buttone click!");
+                $('p').toggle();
+
+            })
+        })
+
+
+    </script>
+    <style>
+        #wrapper {
+            position: relative;
+            margin: 11px -40px;
+
+        }
+       
+        #wrapper a {
+            font-size: 1em;
+            color: #000000;
+        }
+        
+
+
+        #wrapper img {
+            position: absolute;
+            width: 100%;
+            height: auto;
+            left: 0;
+            top: 0;
+            opacity: 0.4;
+            z-index: -1;
+        }
+        #chatArea {
+            overflow: auto; 
+            width: 90%;
+            height: 360px;
+            margin: 2% auto;
+            background: #eeeeee;
+        }
+      
+        #message {
+            width: 60%;
+            margin-left: 5%;
+            padding-left: 5px;
+            height: 40px;
+            background: #eeeeee;
+        }
+
+         #button {
+            height: 40px;
+            width: 15%;
+            margin-left: 15%;
+        }
+    </style>
+
+</head>
+    <body>
+
+
+
+    <div id="wrapper">
+       <!-- <button id="groupMembers">Group Members
+        <p data-ng-repeat="x in members"> {{x}}</p>
+       </button> -->
+<section>
+         <ul class="nav nav-tabs">
+             <li role="presentation" ng-class="{active:tab===1}"  ng-click="groupChat()"><a href>Group Chat</a></li>
+             <li role="presentation" class="dropdown" ng-class="{active:tab===2}">
+                 <a class="dropdown-toggle" data-toggle="dropdown" href role="button" aria-haspopup="true" aria-expanded="false">
+                     Chat With <span class="caret"></span>
+                 </a>
+                 <ul class="dropdown-menu">
+                     <li ng-repeat="user in groupMembers" ><a href ng-click="getChatWith(user)">{{user}}</a> </li>
+                 </ul>
+             </li>
+
+         </ul>
+
+     </section>
+
+
+      <br>
+        <div id="receipter" data-ng-model="receiver" style="font-weight: bold; font-size:24px;margin-left: 100px">Receiver: {{receiver}}</div>
+    <form id="chatArea"></form>
+        
+    <div>
+        <form>
+            <input id="message" type="text" placeholder="Start your conversation here" autofocus>
+
+            <button id="button" ng-click="sendBt()">Send</button>
+        </form>
+
+    </div>
+    <img src="static/image/wallpaper_butterfly.jpeg">
+
 </div>
+
+    </body>
+    </div>
+
+
+
+
+
+
+
+
+
+

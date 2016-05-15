@@ -13,7 +13,7 @@
         <li ng-repeat="user in groupMembers" ng-click="getPosts(user)"><a href>{{user}}</a></li>
       </ul>
     </li>
-    <li role="presentation" ng-class="{active:tab===3}" style=""><a href ng-click="searchTab()">Search</a></li>
+    <!-- <li role="presentation" ng-class="{active:tab===3}" style=""><a href ng-click="searchTab()">Search</a></li> -->
   </ul>
 </section>
 
@@ -26,7 +26,7 @@
       <p ng-bind="error"></p>
     </form>
     <button id="publish_button" ng-show="tab===1&&setId===false" class="btn myButton" ng-click="publish()">Publish</button>
-    <div class="input-group" ng-show="tab===3" id="search_bar">
+    <div class="input-group" ng-show=false id="search_bar">
       <input type="text" ng-model="search_result.keyword" class="form-control" placeholder="Enter Keyword Here...">
       <span class="input-group-btn">
         <button ng-click="search()" class="btn btn-secondary" type="button">Go!</button>

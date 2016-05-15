@@ -10,15 +10,7 @@ app.controller('MainCtrl', [ '$scope', "$cookies", '$http', "UserService", "Grou
         console.log(localGroupname);
 
 
-        GroupService.showGroups($cookies.get('currentGroup'))
-            .then(
-              function(response){
-                  $rootScope.groupname = response.data.groupname;
-                  $rootScope.groupowner = response.data.groupowner;
-                  $rootScope.grouptags = response.data.grouptags;
-              }
-
-          )
+        
         // $scope.showGroup = function () {
         //     $http({
         //             method: 'GET',

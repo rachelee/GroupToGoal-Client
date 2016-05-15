@@ -20,6 +20,8 @@ app.factory('BlogIdService', ["$q","$http", "GApi", function($q, $http, GApi) {
     factory.getId = function(username) {
         var deferred = $q.defer();
         if( blog_ids[username] !== undefined){
+            console.log("Blog ids saved");
+            console.log(blog_ids[username]);
             deferred.resolve(blog_ids[username]);
         }
         else{
@@ -28,8 +30,10 @@ app.factory('BlogIdService', ["$q","$http", "GApi", function($q, $http, GApi) {
                 url: 'http://localhost:3000/blog_id',
                 params: {user: username}
             }).then(function successCallback(response) {
-                if(response.data.length==0)
+                if(response.data.length==0){
+                    console.log(response);
                     deferred.reject("No id found!");
+                }
                 else{
                     blog_ids[username]=response.data[0].blog_id;
                     deferred.resolve(blog_ids[username]);
@@ -91,15 +95,17 @@ app.factory('BlogPostsService', ["GApi", "$http", "$q", "BlogIdService",  functi
         var deferred = $q.defer();
         BlogIdService.getId(username).then(
             function(blogId){
+                console.log(blogId);
                 GApi.executeAuth('blogger', 'posts.search', {'blogId': blogId, 'q': keyword}).then(
                     function (resp) {
+                    console.log(resp);
                     postList.push.apply(postList,resp.items);
                 }, function () {
                     console.log("error get post list failed");
                 });
             },
             function(msg){
-                //console.log(msg);
+                console.log("Search Failed:" + msg);
                 deferred.reject(msg);
             }
         );
@@ -188,7 +194,13 @@ app.controller('StudyNotesCtrl', ['$scope','GApi', '$http', '$rootScope','$q', '
                     'resource': $scope.newPost
                 }).then(function (resp) {
                     var post = resp;
-                    $scope.blog.posts.unshift(post);
+                    if($scope.blog.posts==[]){
+                        $scope.blog.posts.push(post);
+                    }
+                    else{
+                        $scope.blog.posts.unshift(post);
+                    }
+                    
                     $scope.newPost.title=undefined;
                     $scope.newPost.content=undefined;
                     $scope.visible = !$scope.visible
@@ -225,16 +237,20 @@ app.controller('StudyNotesCtrl', ['$scope','GApi', '$http', '$rootScope','$q', '
     function executeSearch(){
         $scope.search_result.posts = [];
         var username_list = [];
-        username_list.push($rootScope.localUsername);
-        console.log($rootScope.groupMembers);
+        username_list.push($cookies.get('localUserId'));
+        //console.log($rootScope.groupMembers);
         for(var i in $rootScope.groupMembers){
             username_list.push($rootScope.groupMembers[i]);
 
         }
+        console.log("usernames: "+username_list);
 
+        //var promise_arr = [];
         for(var i in username_list) {
-            BlogPostsService.searchPost(username_list[i], $scope.search_result.keyword, $scope.search_result.posts)
+            BlogPostsService.searchPost(username_list[i], $scope.search_result.keyword, $scope.search_result.posts);
+            //promise_arr.push();
         }
+        // return $q.all(promise_arr);
         return $q(function(resolve, reject){
             setTimeout(function(){
                 if($scope.search_result.posts===[]){
@@ -250,8 +266,8 @@ app.controller('StudyNotesCtrl', ['$scope','GApi', '$http', '$rootScope','$q', '
     $scope.search=function(){
         var promise = executeSearch();
         promise.then(
-            function(){
-                console.log("displayed:"+$scope.blog.posts);
+            function(data){
+                console.log("displayed:"+data);
                 $scope.blog.posts = $scope.search_result.posts;
             }
         );

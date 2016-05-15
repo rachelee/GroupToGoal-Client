@@ -16,7 +16,6 @@ var app = angular.module('myApp', [
   'myApp.homepage',
   'myApp.signup',
   'myApp.group_management',
-  'angularSpinner',
   'myApp.user_profile'
 ]);
 
@@ -203,13 +202,13 @@ app.run(['GAuth', 'GApi', 'GData', '$cookies','UserService','$state', '$rootScop
      GAuth.setScope('https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/blogger');
 
     $rootScope.logout = function() {
-        console.log("LocalUser: "+$cookies.get('localUserId'));
+        //console.log("LocalUser: "+$cookies.get('localUserId'));
         var cookies = $cookies.getAll();
         angular.forEach(cookies, function (v, k) {
             $cookies.remove(k);
         });
 
-        console.log("LocalUser: "+$cookies.get('localUserId'));
+        //console.log("LocalUser: "+$cookies.get('localUserId'));
         GAuth.logout().then(function () {
           console.log("GAuth logged out")
           $state.go('homepage');
@@ -255,13 +254,36 @@ app.controller('AppCtrl', [ '$scope', "$cookies","GroupService","$state","$rootS
                     for(var i=0;i<results.length;i++){
                         $rootScope.groupMemberGmails.push(results[i].data);
                     }
-                    console.log($rootScope.groups);
-                    console.log($rootScope.groupMembers);
-                    console.log($rootScope.groupMemberGmails);
-                    console.log($cookies.get('currentGroup'));
+                    // console.log($rootScope.groups);
+                    // console.log($rootScope.groupMembers);
+                    // console.log($rootScope.groupMemberGmails);
+                    // console.log($cookies.get('currentGroup'));
                 }
             );
+
+                
+            GroupService.getGroup()
+                .then(
+                function(response){
+                    $rootScope.groups=response;
+                    if($cookies.get('currentGroup')===undefined) {
+                        $cookies.put('currentGroup', response[0]);
+                        return GroupService.showGroups(response[0]);
+                    }
+                    else{
+                        return GroupService.showGroups($cookies.get('currentGroup'));
+                    }
+                })
+                .then(
+                function(response){
+                  $rootScope.groupname = response.data.groupname;
+                  $rootScope.groupowner = response.data.groupowner;
+                  $rootScope.grouptags = response.data.grouptags;
+                  //console.log("Testing: "+$rootScope.groupname);
+                })
         }
+
+        
 
         function getGmailList(groupMembers){
             var promiseList = [];
@@ -289,7 +311,7 @@ app.controller('AppCtrl', [ '$scope', "$cookies","GroupService","$state","$rootS
                     console.log($rootScope.groupMemberGmails);
                     console.log($cookies.get('currentGroup'));
                 });
-            GroupService.showGroups($cookies.get('currentGroup'))
+            GroupService.showGroups(name)
                 .then(
                   function(response){
                       $rootScope.groupname = response.data.groupname;
@@ -339,7 +361,7 @@ app.factory('GroupService', ["$http", "$q", "$cookies",  "$state", function($htt
         }).then(function successCallback(response) {
             var groupMembers = [];
             for(var i=0;i<response.data.length;i++){
-                console.log(localUsername);
+                //console.log(localUsername);
                 if(response.data[i]!==localUsername){
                     groupMembers.push(response.data[i]);
                 }
@@ -372,7 +394,7 @@ app.factory('GroupService', ["$http", "$q", "$cookies",  "$state", function($htt
           url: 'http://localhost:8080/showgroup/' + groupname
           // params: {user: localUsername}
       }).then(function successCallback(response) {
-          console.log(response);
+          //console.log(response);
           deferred.resolve(response);
           // $scope.groupname = response.data.groupname;
           // $scope.groupowner = response.data.groupowner;

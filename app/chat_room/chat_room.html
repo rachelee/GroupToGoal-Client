@@ -15,9 +15,13 @@
 
     </script>
     <style>
+        body{
+            background-color:#e5eaff;
+        }
         #wrapper {
             position: relative;
             margin: 11px -40px;
+
 
         }
        
@@ -40,23 +44,30 @@
         #chatArea {
             overflow: auto; 
             width: 90%;
-            height: 360px;
-            margin: 2% auto;
+            height: 400px;
+            margin: 1% auto;
+            border-radius: 15px;
             background: #eeeeee;
+            border: solid 2px rgb(39, 33, 81);
         }
       
         #message {
-            width: 60%;
+            width: 68%;
             margin-left: 5%;
             padding-left: 5px;
             height: 40px;
+            border-radius: 5px;
             background: #eeeeee;
+            border: solid 2px rgb(39, 33, 81);
         }
 
          #button {
             height: 40px;
             width: 15%;
-            margin-left: 15%;
+            margin-left: 5%;
+             color: white;
+             border-radius: 5em;
+             background-color: rgb(39, 33, 81);
         }
     </style>
 
@@ -80,14 +91,18 @@
                      <li ng-repeat="user in groupMembers" ><a href ng-click="getChatWith(user)">{{user}}</a> </li>
                  </ul>
              </li>
-
+             <a href="https://hangouts.google.com/" target="_blank"><button type="button" class="btn btn-default navbar-btn" style="margin-left: 63%;color: white;border-radius: 5em">LiveChat</button></a>
          </ul>
+
+
+
+
 
      </section>
 
 
-      <br>
-        <div id="receipter" data-ng-model="receiver" style="font-weight: bold; font-size:24px;margin-left: 100px">Receiver: {{receiver}}</div>
+
+        <div id="receipter" data-ng-model="receiver" style="padding-top:5px;color: rgb(39, 33, 81); font-size:24px;margin-left: 100px">Receiver: {{receiver}}</div>
     <form id="chatArea"></form>
         
     <div>
@@ -98,7 +113,7 @@
         </form>
 
     </div>
-    <img src="static/image/wallpaper_butterfly.jpeg">
+
 
 </div>
 

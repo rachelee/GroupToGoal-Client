@@ -108,13 +108,13 @@ angular.module('myApp.chat_room', ['ngRoute','angular-google-gapi'])
         //}
         $scope.groupChat=function(){
             $scope.receiver=$rootScope.groupMembers;
-
+            $('form#chatArea').empty();
             console.log("multi "+$scope.receiver);
         }
         $scope.getChatWith= function(user){
 
                 $scope.receiver=user;
-
+            $('form#chatArea').empty();
                 console.log("single "+$scope.receiver);
 
 
@@ -168,8 +168,8 @@ angular.module('myApp.chat_room', ['ngRoute','angular-google-gapi'])
                     .append([
                         '<form id="from">'+
                         ($rootScope.localUsername== message.senderId ? '<div style="color:rgba(0, 0, 135, 0.58); font-size: 20px; ' +
-                        'font-family: "Courier New", Courier, monospace>'+ 'Me: '+
-                        message.textBody+ '</div>' : '<div style=" color:rgba(163, 84, 31, 0.6)">'+message.senderId+' : '
+                        'font-family: "Courier New", Courier, monospace>'+ 'Me : '+
+                        message.textBody+ '</div>' : '<div style=" color:rgba(163, 84, 31, 0.6);font-size: 20px;">'+message.senderId+' : '
                         + message.textBody+'</div>')+'</form>',
                         '<div class="recipients"></div>'
                     ]);
